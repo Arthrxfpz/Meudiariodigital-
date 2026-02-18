@@ -315,12 +315,18 @@ h1 { font-size: 3em; margin-bottom: 10px; background: linear-gradient(135deg, #f
 .pw-opt-btn.danger:hover { background: rgba(244,67,54,0.1); }
 .pw-err { font-size: 0.83em; color: #f44336; margin-bottom: 12px; min-height: 18px; }
 /* Post lock overlay */
-.post-lock-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 18px; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; transition: all 0.2s ease; }
-.post-lock-overlay:hover .lock-lbl { color: #aaa; }
-.post-lock-overlay .lock-ico { font-size: 2.6em; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8)); }
-.post-lock-overlay .lock-lbl { color: #888; font-size: 0.92em; font-weight: 500; }
-.post-lock-overlay .lock-hint { color: #555; font-size: 0.78em; }
-.post-blur-content { filter: blur(12px); pointer-events: none; user-select: none; }
+.post-locked-body { position: relative; margin: 0 0 0 0; }
+.post-blur-content { filter: blur(7px); pointer-events: none; user-select: none; padding: 14px 20px 18px 24px; }
+.post-blur-content .blur-line { height: 13px; border-radius: 6px; background: rgba(255,255,255,0.07); margin-bottom: 10px; }
+.post-blur-content .blur-line:nth-child(2) { width: 85%; }
+.post-blur-content .blur-line:nth-child(3) { width: 70%; }
+.post-lock-overlay { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; background: linear-gradient(to bottom, rgba(12,12,12,0.55), rgba(12,12,12,0.75)); border-radius: 0 0 16px 16px; }
+.post-lock-overlay:hover { background: linear-gradient(to bottom, rgba(20,20,20,0.65), rgba(20,20,20,0.82)); }
+.post-lock-overlay:hover .lock-lbl { color: #ccc; }
+.post-lock-overlay:hover .lock-ico { color: #aaa; transform: scale(1.08); }
+.post-lock-overlay .lock-ico { font-size: 1.6em; color: #555; transition: all 0.2s ease; }
+.post-lock-overlay .lock-lbl { color: #777; font-size: 0.85em; font-weight: 500; transition: color 0.2s; }
+.post-lock-overlay .lock-hint { color: #444; font-size: 0.72em; }
 /* Toggle field for post password */
 .toggle-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(10,10,10,0.4); border: 1px solid #2a2a2a; border-radius: 10px; cursor: pointer; margin-bottom: 10px; }
 .toggle-row:hover { border-color: #3a3a3a; }
@@ -602,67 +608,216 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 .menu-badge.badge-trash { background:linear-gradient(135deg,#ef5350,#c62828); box-shadow:0 2px 8px rgba(239,83,80,0.4); }
 @keyframes badgePop { from { transform:translateY(-50%) scale(0); opacity:0; } to { transform:translateY(-50%) scale(1); opacity:1; } }
 
-/* === LOGIN OVERLAY === */
-#loginOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0a0a; z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px; }
-#loginOverlay.hide { display:none; }
-.login-box { background:rgba(18,18,18,0.99); border:1px solid rgba(255,255,255,0.08); border-radius:28px; padding:52px 44px; max-width:420px; width:100%; text-align:center; animation:scaleIn 0.4s ease; box-shadow:0 30px 80px rgba(0,0,0,0.9); }
-.login-logo { font-size:3.5em; margin-bottom:18px; display:block; }
-.login-title { font-size:1.8em; font-weight:700; margin-bottom:8px; background:linear-gradient(135deg,#fff 0%,#aaa 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.login-sub { color:#555; font-size:0.92em; margin-bottom:36px; line-height:1.6; }
-.google-btn { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:15px 24px; background:#fff; border:none; border-radius:14px; cursor:pointer; font-size:1em; font-weight:600; color:#1a1a1a; font-family:'Poppins',sans-serif; transition:all 0.25s ease; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
-.google-btn:hover { background:#f5f5f5; transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.4); }
-.google-btn:active { transform:translateY(0); }
-.google-btn img { width:22px; height:22px; }
-.google-btn.loading { opacity:0.7; pointer-events:none; }
-.login-footer { margin-top:24px; font-size:0.74em; color:#333; line-height:1.6; }
-/* === USER BAR === */
-#userBar { display:none; align-items:center; justify-content:flex-end; gap:10px; padding:10px 0; margin-bottom:4px; }
-#userBar.show { display:flex; }
-.user-bar-avatar { width:32px; height:32px; border-radius:50%; border:2px solid rgba(255,255,255,0.1); object-fit:cover; }
-.user-bar-name { font-size:0.82em; color:#666; }
-.signout-btn { padding:6px 14px; background:rgba(42,42,42,0.6); border:1px solid #2a2a2a; border-radius:8px; color:#666; font-size:0.78em; cursor:pointer; font-family:'Poppins',sans-serif; transition:all 0.2s ease; display:flex; align-items:center; gap:6px; }
-.signout-btn:hover { border-color:#3a3a3a; color:#aaa; }
-/* Sync indicator */
-#syncIndicator { position:fixed; bottom:20px; right:20px; background:rgba(18,18,18,0.95); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:8px 14px; font-size:0.78em; color:#666; display:none; align-items:center; gap:8px; z-index:9999; animation:slideUp 0.3s ease; }
-#syncIndicator.show { display:flex; }
-#syncIndicator.error { color:#ef5350; border-color:rgba(239,83,80,0.2); }
-@keyframes spin { to { transform:rotate(360deg); } }
-.sync-spin { animation:spin 1s linear infinite; display:inline-block; }
+/* === MODO FOCO === */
+.focus-overlay { display:none; position:fixed; inset:0; background:rgba(5,5,5,0.97); z-index:90000; flex-direction:column; }
+.focus-overlay.show { display:flex; }
+.focus-topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 28px; border-bottom:1px solid rgba(255,255,255,0.05); flex-shrink:0; }
+.focus-title-display { font-size:0.85em; color:#444; font-weight:500; max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.focus-stats { font-size:0.78em; color:#333; display:flex; gap:14px; }
+.focus-stat { display:flex; align-items:center; gap:5px; }
+.focus-body { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px; overflow-y:auto; }
+.focus-editor { width:100%; max-width:680px; }
+.focus-editor-title { width:100%; background:transparent; border:none; outline:none; color:#e8e8e8; font-size:2em; font-weight:700; font-family:inherit; margin-bottom:24px; line-height:1.2; resize:none; }
+.focus-editor-title::placeholder { color:#2a2a2a; }
+.focus-editor-body { width:100%; background:transparent; border:none; outline:none; color:#bbb; font-size:1.1em; font-family:inherit; line-height:1.9; resize:none; min-height:60vh; }
+.focus-editor-body::placeholder { color:#222; }
+.focus-bottombar { display:flex; align-items:center; justify-content:space-between; padding:14px 28px; border-top:1px solid rgba(255,255,255,0.04); flex-shrink:0; gap:10px; }
+.focus-wordcount { font-size:0.78em; color:#333; }
+.focus-exit-btn { padding:8px 18px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; color:#555; font-size:0.82em; cursor:pointer; transition:all 0.2s; font-family:'Poppins',sans-serif; }
+.focus-exit-btn:hover { background:rgba(255,255,255,0.09); color:#aaa; border-color:rgba(255,255,255,0.14); }
+.focus-save-btn { padding:8px 20px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14); border-radius:10px; color:#ccc; font-size:0.82em; cursor:pointer; transition:all 0.2s; font-family:'Poppins',sans-serif; display:flex; align-items:center; gap:7px; }
+.focus-save-btn:hover { background:rgba(255,255,255,0.13); color:#fff; }
 
+/* === MODO LEITURA === */
+.reading-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:85000; align-items:center; justify-content:center; padding:20px; overflow-y:auto; }
+.reading-overlay.show { display:flex; animation:fadeIn 0.25s ease; }
+.reading-modal { background:rgba(14,14,14,0.99); border:1px solid rgba(255,255,255,0.06); border-radius:24px; max-width:700px; width:100%; max-height:92vh; overflow-y:auto; padding:50px 56px; animation:scaleIn 0.3s ease; position:relative; }
+@media(max-width:600px){ .reading-modal { padding:30px 22px; } }
+.reading-close { position:absolute; top:22px; right:22px; background:rgba(42,42,42,0.5); border:1px solid #2a2a2a; color:#666; width:38px; height:38px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1em; transition:all 0.2s; }
+.reading-close:hover { background:#2a2a2a; color:#ccc; transform:rotate(90deg); }
+.reading-mood { font-size:1.4em; margin-bottom:16px; }
+.reading-title { font-size:2em; font-weight:700; color:#f0f0f0; line-height:1.25; margin-bottom:16px; letter-spacing:-0.5px; }
+.reading-meta { display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:0.82em; color:#555; margin-bottom:36px; padding-bottom:28px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.reading-body { font-size:1.08em; line-height:1.9; color:#c0c0c0; white-space:pre-wrap; word-break:break-word; }
+.reading-body a { color:#7bb3ff; }
+.reading-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:32px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.05); }
+.reading-tag { padding:5px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09); border-radius:20px; font-size:0.8em; color:#555; }
+.reading-media { margin-top:24px; }
+.reading-media img { width:100%; border-radius:14px; margin-bottom:10px; }
+.reading-footer { display:flex; align-items:center; justify-content:space-between; margin-top:28px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.04); }
+.reading-footer-stat { font-size:0.78em; color:#444; display:flex; align-items:center; gap:6px; }
+
+/* === PROMPTS DE ESCRITA === */
+.prompt-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:95000; align-items:center; justify-content:center; padding:20px; }
+.prompt-overlay.show { display:flex; animation:fadeIn 0.2s ease; }
+.prompt-box { background:rgba(18,18,18,0.99); border:1px solid rgba(255,255,255,0.08); border-radius:24px; max-width:500px; width:100%; padding:44px 40px; text-align:center; animation:scaleIn 0.3s ease; }
+.prompt-icon { font-size:2.8em; margin-bottom:20px; display:block; }
+.prompt-label { font-size:0.72em; font-weight:600; color:#444; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:14px; }
+.prompt-text { font-size:1.25em; font-weight:500; color:#ddd; line-height:1.5; margin-bottom:28px; min-height:60px; }
+.prompt-actions { display:flex; gap:10px; justify-content:center; }
+.prompt-btn { padding:11px 22px; border-radius:12px; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.88em; font-weight:500; transition:all 0.2s ease; border:1px solid rgba(255,255,255,0.1); }
+.prompt-use-btn { background:rgba(255,255,255,0.09); color:#ddd; }
+.prompt-use-btn:hover { background:rgba(255,255,255,0.15); color:#fff; }
+.prompt-next-btn { background:transparent; color:#555; border-color:transparent; }
+.prompt-next-btn:hover { color:#888; }
+.prompt-close-btn { background:transparent; color:#444; border-color:transparent; font-size:0.82em; }
+.prompt-close-btn:hover { color:#777; }
+
+/* === META DIÁRIA === */
+.daily-goal-bar { margin:10px 0 4px; animation:slideUp 0.5s ease; }
+.daily-goal-wrap { background:rgba(18,18,18,0.7); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:14px 20px; display:flex; align-items:center; gap:14px; }
+.daily-goal-info { flex:1; min-width:0; }
+.daily-goal-label { font-size:0.75em; color:#555; font-weight:600; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; display:flex; justify-content:space-between; }
+.daily-goal-label span { color:#888; text-transform:none; letter-spacing:0; font-weight:400; }
+.daily-goal-track { height:5px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden; }
+.daily-goal-fill { height:100%; border-radius:10px; background:linear-gradient(90deg, #4a4a4a, #888); transition:width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.daily-goal-fill.done { background:linear-gradient(90deg, #4ade80, #22d3ee); }
+.daily-goal-emoji { font-size:1.5em; flex-shrink:0; }
+
+/* === BUSCA AVANÇADA === */
+.advsearch-box { background:rgba(18,18,18,0.99); border:1px solid rgba(255,255,255,0.06); border-radius:24px; max-width:560px; width:100%; animation:scaleIn 0.3s ease; max-height:90vh; overflow-y:auto; }
+.advsearch-header { padding:22px 28px 18px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:space-between; }
+.advsearch-header h2 { font-size:1.15em; font-weight:600; display:flex; align-items:center; gap:10px; }
+.advsearch-body { padding:22px 28px; display:flex; flex-direction:column; gap:18px; }
+.advsearch-label { font-size:0.75em; font-weight:600; color:#555; text-transform:uppercase; letter-spacing:0.9px; margin-bottom:8px; display:flex; align-items:center; gap:7px; }
+.advsearch-date-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.advsearch-date-row input[type=date] { width:100%; padding:11px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; color:#ccc; font-family:'Poppins',sans-serif; font-size:0.88em; cursor:pointer; }
+.advsearch-date-row input[type=date]:focus { outline:none; border-color:rgba(255,255,255,0.18); }
+.advsearch-moods { display:flex; flex-wrap:wrap; gap:6px; }
+.advsearch-mood-opt { padding:7px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:20px; cursor:pointer; font-size:1em; transition:all 0.2s; }
+.advsearch-mood-opt.sel { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); }
+.advsearch-keywords { width:100%; padding:11px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; color:#fff; font-family:'Poppins',sans-serif; font-size:0.92em; }
+.advsearch-keywords:focus { outline:none; border-color:rgba(255,255,255,0.18); }
+.advsearch-footer { padding:14px 28px 24px; border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:10px; }
+.advsearch-results-count { font-size:0.8em; color:#555; text-align:center; margin-top:4px; min-height:18px; }
+
+/* === NUMERAÇÃO DE POSTS === */
+.post-number { font-size:0.7em; color:#2a2a2a; font-weight:700; margin-bottom:4px; letter-spacing:0.5px; }
+.has-post-numbers .post-number { color:#333; }
+
+/* === FONTE DIÁRIO === */
+body.font-serif .post-description, body.font-serif .focus-editor-body { font-family: Georgia, 'Times New Roman', serif !important; }
+body.font-mono .post-description, body.font-mono .focus-editor-body { font-family: 'Courier New', Courier, monospace !important; }
+
+/* === LINE HEIGHT === */
+body.lh-relaxed .post-description { line-height: 2 !important; }
+body.lh-relaxed .focus-editor-body { line-height: 2.1 !important; }
+body.lh-tight .post-description { line-height: 1.45 !important; }
+
+/* === DESC PREVIEW === */
+.post-description.clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.post-description.clamp-4 { display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* === PROMPT BTN no form === */
+.inspire-btn { display:inline-flex; align-items:center; gap:7px; padding:8px 16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; color:#555; font-size:0.8em; cursor:pointer; transition:all 0.2s; font-family:'Poppins',sans-serif; margin-bottom:4px; }
+.inspire-btn:hover { background:rgba(255,255,255,0.08); color:#aaa; border-color:rgba(255,255,255,0.14); }
+
+/* ===== CALENDÁRIO DE POSTS ===== */
+.cal-modal-box { background:rgba(18,18,18,0.99); border:1px solid rgba(255,255,255,0.06); border-radius:24px; max-width:540px; width:100%; animation:scaleIn 0.3s ease; overflow:hidden; }
+.cal-header { display:flex; align-items:center; justify-content:space-between; padding:22px 28px 18px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.cal-header h2 { font-size:1.15em; font-weight:600; display:flex; align-items:center; gap:10px; }
+.cal-nav { display:flex; align-items:center; gap:8px; }
+.cal-nav-btn { background:rgba(42,42,42,0.6); border:1px solid rgba(255,255,255,0.07); color:#888; width:30px; height:30px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.85em; transition:all 0.2s; }
+.cal-nav-btn:hover { background:#2a2a2a; color:#ccc; }
+.cal-month-label { font-size:0.9em; font-weight:600; min-width:130px; text-align:center; color:#ddd; }
+.cal-body { padding:18px 22px 22px; }
+.cal-weekdays { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:6px; }
+.cal-wd { text-align:center; font-size:0.62em; font-weight:600; color:#2a2a2a; text-transform:uppercase; letter-spacing:0.4px; padding:4px 0; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+.cal-day { aspect-ratio:1; border-radius:9px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.78em; cursor:pointer; transition:all 0.18s ease; border:1px solid transparent; position:relative; color:#333; gap:2px; }
+.cal-day.empty { pointer-events:none; }
+.cal-day.today { color:#aaa; border-color:rgba(255,255,255,0.1); }
+.cal-day.has-posts { color:#ccc; }
+.cal-day.has-posts:hover { background:rgba(255,255,255,0.07); border-color:rgba(255,255,255,0.12); color:#fff; transform:scale(1.06); }
+.cal-day.active-day { background:rgba(255,255,255,0.1) !important; border-color:rgba(255,255,255,0.22) !important; color:#fff !important; }
+.cal-dot-row { display:flex; gap:2px; }
+.cal-dot { width:4px; height:4px; border-radius:50%; background:#333; }
+.cal-dot.p1 { background:#555; } .cal-dot.p2 { background:#888; } .cal-dot.p3 { background:#aaa; }
+.cal-day-num { line-height:1; font-weight:500; }
+.cal-footer { padding:12px 22px 18px; border-top:1px solid rgba(255,255,255,0.04); font-size:0.8em; color:#444; text-align:center; min-height:36px; }
+
+/* ===== NOTAS RÁPIDAS ===== */
+.notes-modal-box { background:rgba(18,18,18,0.99); border:1px solid rgba(255,255,255,0.06); border-radius:24px; max-width:520px; width:100%; max-height:88vh; display:flex; flex-direction:column; animation:scaleIn 0.3s ease; }
+.notes-header { display:flex; align-items:center; justify-content:space-between; padding:20px 26px 16px; border-bottom:1px solid rgba(255,255,255,0.05); flex-shrink:0; }
+.notes-header h2 { font-size:1.1em; font-weight:600; display:flex; align-items:center; gap:10px; }
+.notes-list { flex:1; overflow-y:auto; padding:14px 18px; display:flex; flex-direction:column; gap:8px; }
+.note-card { background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:13px 15px; position:relative; transition:all 0.2s; }
+.note-card:hover { border-color:rgba(255,255,255,0.1); }
+.note-card.note-pinned { order:-1; border-color:rgba(255,200,0,0.18); }
+.note-card.note-pinned::before { content:'📌'; position:absolute; top:10px; right:12px; font-size:0.75em; }
+.note-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+.note-card-date { font-size:0.68em; color:#2a2a2a; }
+.note-card-actions { display:flex; gap:2px; opacity:0; transition:opacity 0.18s; }
+.note-card:hover .note-card-actions { opacity:1; }
+.note-act-btn { background:none; border:none; color:#333; cursor:pointer; padding:4px 7px; border-radius:6px; font-size:0.82em; transition:all 0.15s; }
+.note-act-btn:hover { background:rgba(255,255,255,0.07); color:#aaa; }
+.note-act-btn.pinned { color:#ffcc00; }
+.note-card-stripe { width:3px; position:absolute; left:0; top:10px; bottom:10px; border-radius:2px; }
+.note-text { font-size:0.87em; color:#bbb; line-height:1.65; white-space:pre-wrap; word-break:break-word; padding-left:10px; }
+.notes-add-wrap { border-top:1px solid rgba(255,255,255,0.05); padding:14px 18px; flex-shrink:0; }
+.notes-add-ta { width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; color:#ddd; font-family:'Poppins',sans-serif; font-size:0.88em; padding:12px 15px; resize:none; min-height:65px; transition:border-color 0.2s; line-height:1.65; }
+.notes-add-ta:focus { outline:none; border-color:rgba(255,255,255,0.14); }
+.notes-add-ta::placeholder { color:#222; }
+.notes-add-row { display:flex; justify-content:space-between; align-items:center; margin-top:9px; }
+.note-colors { display:flex; gap:6px; }
+.nc-dot { width:17px; height:17px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:all 0.18s; }
+.nc-dot:hover,.nc-dot.sel { border-color:#fff; transform:scale(1.2); }
+.notes-empty-state { text-align:center; padding:36px 20px; color:#222; }
+.notes-empty-state i { font-size:2.2em; display:block; margin-bottom:10px; }
+.note-fab { position:fixed; bottom:96px; right:22px; width:44px; height:44px; background:rgba(28,28,28,0.95); border:1px solid rgba(255,255,255,0.09); border-radius:13px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1em; color:#555; transition:all 0.25s; z-index:998; box-shadow:0 4px 16px rgba(0,0,0,0.4); }
+.note-fab:hover { color:#bbb; border-color:rgba(255,255,255,0.18); transform:scale(1.07); }
+.note-fab-badge { position:absolute; top:-5px; right:-5px; background:#444; color:#fff; font-size:0.5em; font-weight:700; width:15px; height:15px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+/* ===== CITAÇÃO DO DIA ===== */
+.quote-strip { text-align:center; padding:6px 20px 16px; }
+.quote-strip-text { font-size:0.82em; color:#282828; font-style:italic; line-height:1.55; max-width:580px; margin:0 auto; transition:opacity 0.5s ease; }
+.quote-strip-text::before { content:'\201C'; } .quote-strip-text::after { content:'\201D'; }
+.quote-strip-author { font-size:0.68em; color:#1e1e1e; margin-top:4px; }
+
+/* ===== MOOD TRACKER SEMANAL ===== */
+.mood-week-bar { margin:2px 0 12px; }
+.mood-week-wrap { background:rgba(14,14,14,0.7); border:1px solid rgba(255,255,255,0.04); border-radius:14px; padding:12px 18px; }
+.mood-week-title { font-size:0.65em; font-weight:600; color:#252525; text-transform:uppercase; letter-spacing:0.9px; margin-bottom:10px; }
+.mood-week-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.mood-week-day { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.mood-week-slot { width:100%; aspect-ratio:1; border-radius:9px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); font-size:1em; transition:all 0.2s; cursor:default; }
+.mood-week-slot:hover { transform:scale(1.12); border-color:rgba(255,255,255,0.1); }
+.mood-week-slot.empty { opacity:0.15; }
+.mood-week-lbl { font-size:0.55em; color:#222; font-weight:600; text-transform:uppercase; }
+.mood-week-lbl.is-today { color:#444; }
+
+/* ===== EXPORTAR COMO LIVRO ===== */
+.book-box { background:rgba(18,18,18,0.99); border:1px solid rgba(255,255,255,0.06); border-radius:24px; max-width:480px; width:100%; animation:scaleIn 0.3s ease; overflow:hidden; }
+.book-header { display:flex; align-items:center; justify-content:space-between; padding:22px 26px 18px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.book-header h2 { font-size:1.1em; font-weight:600; display:flex; align-items:center; gap:10px; }
+.book-body { padding:22px 26px; display:flex; flex-direction:column; gap:14px; }
+.book-opt { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.book-opt-info .book-opt-label { font-size:0.9em; color:#ccc; }
+.book-opt-info .book-opt-sub { font-size:0.74em; color:#555; margin-top:1px; }
+.book-preview-card { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:16px; }
+.book-preview-title { font-size:0.75em; color:#444; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.8px; font-weight:600; }
+.book-preview-lines { display:flex; flex-direction:column; gap:5px; }
+.book-preview-line { height:8px; border-radius:4px; background:rgba(255,255,255,0.05); }
+.book-preview-line.title-line { height:14px; width:60%; background:rgba(255,255,255,0.08); }
+.book-preview-line.short { width:75%; }
+.book-footer { padding:14px 26px 22px; border-top:1px solid rgba(255,255,255,0.04); display:flex; gap:10px; }
     </style>
 </head>
 <body>
 
-    <!-- Login Overlay -->
-    <div id="loginOverlay">
-        <div class="login-box">
-            <span class="login-logo">📖</span>
-            <div class="login-title">Meu Diário Digital</div>
-            <div class="login-sub">Entre com o Google para acessar e sincronizar seu diário em qualquer dispositivo.</div>
-            <button class="google-btn" id="googleSignInBtn" onclick="signInWithGoogle()" disabled>
-                <span class="sync-spin" style="display:inline-block;">↻</span>
-                Carregando...
-            </button>
-            <div class="login-footer">🔒 Seus dados ficam salvos em segurança na sua conta Google.<br>Acesse de qualquer dispositivo a qualquer hora.</div>
-        </div>
-    </div>
-
-    <!-- Sync indicator -->
-    <div id="syncIndicator"><span class="sync-spin">↻</span> <span id="syncMsg">Sincronizando...</span></div>
-
     <div class="container">
-        <!-- User bar -->
-        <div id="userBar">
-            <img class="user-bar-avatar" id="userAvatar" src="" alt="">
-            <span class="user-bar-name" id="userBarName"></span>
-            <button class="signout-btn" onclick="signOutUser()"><i class="fas fa-sign-out-alt"></i> Sair</button>
-        </div>
-
         <header>
             <h1><i class="fas fa-book"></i> Meu Diário Digital</h1>
             <p class="subtitle">Registre seus momentos especiais</p>
+            <!-- Citação do dia -->
+            <div class="quote-strip" id="quoteStrip" style="display:none">
+                <div class="quote-strip-text" id="quoteText"></div>
+                <div class="quote-strip-author" id="quoteAuthor"></div>
+            </div>
             <div class="greeting-bar"><p class="greeting-text" id="greetingText"></p></div>
             <div class="stat-cards" id="streakBadgeWrap"></div>
+            <!-- Mood Tracker Semanal -->
+            <div class="mood-week-bar" id="moodWeekBar" style="display:none"></div>
         </header>
 
         <div class="controls">
@@ -679,7 +834,9 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                     <div class="dropdown-content" id="moreDropdown">
                         <div class="dropdown-item" onclick="showGallery()"><i class="fas fa-images"></i> Galeria</div>
                         <div class="dropdown-item" onclick="showTimeline()"><i class="fas fa-stream"></i> Linha do Tempo</div>
+                        <div class="dropdown-item" onclick="showCalendar()"><i class="fas fa-calendar-alt"></i> Calendário</div>
                         <div class="dropdown-item" onclick="showStats()"><i class="fas fa-chart-bar"></i> Estatísticas</div>
+                        <div class="dropdown-item" onclick="openNotes()"><i class="fas fa-sticky-note"></i> Notas Rápidas</div>
                         <div class="dropdown-item" onclick="showTrash()" id="trashDropdownItem"><i class="fas fa-trash-alt"></i> Lixeira</div>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="openSettings()"><i class="fas fa-sliders-h"></i> Configurações</div>
@@ -713,7 +870,9 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             <div class="mobile-menu-item" onclick="openPasswordManager();closeMobileMenu()"><i class="fas fa-lock"></i> Senha do Diário</div>
             <div class="mobile-menu-item" id="mmi-gallery" onclick="showGallery();clearMenuBadge('gallery');closeMobileMenu()"><i class="fas fa-images"></i> Galeria</div>
             <div class="mobile-menu-item" onclick="showTimeline();closeMobileMenu()"><i class="fas fa-stream"></i> Linha do Tempo</div>
+            <div class="mobile-menu-item" onclick="showCalendar();closeMobileMenu()"><i class="fas fa-calendar-alt"></i> Calendário</div>
             <div class="mobile-menu-item" onclick="showStats();closeMobileMenu()"><i class="fas fa-chart-bar"></i> Estatísticas</div>
+            <div class="mobile-menu-item" onclick="openNotes();closeMobileMenu()"><i class="fas fa-sticky-note"></i> Notas Rápidas</div>
             <div class="mobile-menu-item" id="mmi-trash" onclick="showTrash();clearMenuBadge('trash');closeMobileMenu()"><i class="fas fa-trash-alt"></i> Lixeira</div>
             <div class="mobile-divider"></div>
             <div class="mobile-menu-item" onclick="openSettings();closeMobileMenu()"><i class="fas fa-sliders-h"></i> Configurações</div>
@@ -730,6 +889,12 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             <input type="text" id="searchInput" placeholder="Pesquisar publicações..." oninput="filterPosts(this.value)">
             <i class="fas fa-search search-icon"></i>
         </div>
+        <div style="text-align:right;margin-top:-6px;margin-bottom:10px;">
+            <button onclick="openAdvSearch()" style="background:none;border:none;color:#333;font-size:0.75em;font-family:'Poppins',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:color 0.2s;" onmouseover="this.style.color='#777'" onmouseout="this.style.color='#333'"><i class="fas fa-sliders-h"></i> Busca avançada</button>
+        </div>
+
+        <!-- Meta Diária -->
+        <div class="daily-goal-bar" id="dailyGoalBar" style="display:none;"></div>
 
         <div class="filter-tags-wrap" id="filterTagsWrap" style="display:none;">
             <div class="filter-tags" id="filterTags"></div>
@@ -866,7 +1031,14 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 
                     <!-- Conteúdo -->
                     <div class="form-field">
-                        <div class="form-field-label" style="justify-content:space-between;"><span><i class="fas fa-pen-nib"></i> Conte sua história</span><span class="char-badge" style="position:static;font-size:0.75em;" id="descCounter">0/5000</span></div>
+                        <div class="form-field-label" style="justify-content:space-between;">
+                            <span><i class="fas fa-pen-nib"></i> Conte sua história</span>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <button type="button" class="inspire-btn" id="inspireBtn" onclick="openWritingPrompt(false)" title="Sugerir tema"><i class="fas fa-magic"></i> Inspire-me</button>
+                                <button type="button" class="inspire-btn" onclick="openFocusMode()" title="Modo foco"><i class="fas fa-expand-alt"></i> Foco</button>
+                                <span class="char-badge" style="position:static;font-size:0.75em;" id="descCounter">0/5000</span>
+                            </div>
+                        </div>
                         <textarea id="postDescription" required placeholder="Escreva sobre o seu dia, seus pensamentos, sentimentos..." maxlength="5000"></textarea>
                     </div>
 
@@ -1036,7 +1208,26 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             highlightFavorites: true,
             showHashtagsCount: true,
             galleryColumns: 'auto',
-            trashEnabled: true
+            trashEnabled: true,
+            // ── Novas preferências ──
+            fontFamily: 'poppins',
+            lineHeight: 'normal',
+            defaultSort: 'newest',
+            defaultLayout: 'list',
+            descPreview: 'auto',
+            dailyWordGoal: 0,
+            showDailyGoal: false,
+            showReadingMode: true,
+            showWritingPrompts: true,
+            postNumbering: false,
+            autoFocusMode: false,
+            accentOnPosts: true,
+            showStreakInHeader: true,
+            confirmPostClose: false,
+            writingSound: false,
+            showQuote: false,
+            showMoodWeek: false,
+            showNoteFab: false
         }, JSON.parse(localStorage.getItem('userPrefs')) || {});
         let usedHashtags = JSON.parse(localStorage.getItem('usedHashtags')) || [];
         let currentFilter = null;
@@ -1064,24 +1255,15 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                 document.getElementById('gridModeBtn').classList.add('active');
                 document.getElementById('listModeBtn').classList.remove('active');
             }
-            setupEventListeners();
-            // Firebase auth will call launchApp() after login
-        });
-
-        function launchApp() {
             if (appPassword && !appUnlocked) {
                 document.getElementById('lockScreen').classList.add('show');
                 updateLockUI();
             } else {
                 appUnlocked = true;
-                if (!userName) {
-                    document.getElementById('namePopup').classList.add('show');
-                    setTimeout(()=>document.getElementById('namePopupInput').focus(), 300);
-                } else {
-                    initApp();
-                }
+                initApp();
             }
-        }
+            setupEventListeners();
+        });
 
         function initApp() {
             purgeOldTrash();
@@ -1095,6 +1277,10 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             updateTrashDropdownBadge();
             renderAllMenuBadges();
             updateTrashVisibility();
+            renderDailyGoal();
+            renderQuote();
+            renderMoodWeek();
+            updateNoteFab();
         }
 
         function updateGreeting() {
@@ -1121,6 +1307,23 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                 pc.classList.toggle('no-anim', !prefs.animatePosts);
                 pc.classList.toggle('highlight-favs', !!prefs.highlightFavorites);
             }
+            // Fonte
+            document.body.classList.remove('font-serif','font-mono');
+            if(prefs.fontFamily==='serif') document.body.classList.add('font-serif');
+            if(prefs.fontFamily==='mono') document.body.classList.add('font-mono');
+            // Line height
+            document.body.classList.remove('lh-relaxed','lh-tight');
+            if(prefs.lineHeight==='relaxed') document.body.classList.add('lh-relaxed');
+            if(prefs.lineHeight==='tight') document.body.classList.add('lh-tight');
+            // Meta diária
+            renderDailyGoal();
+            // Botão inspire-me
+            const ib = document.getElementById('inspireBtn');
+            if(ib) ib.style.display = prefs.showWritingPrompts ? '' : 'none';
+            // Quote + MoodWeek
+            renderQuote();
+            renderMoodWeek();
+            updateNoteFab();
         }
 
         function checkNameOnLoad() {
@@ -1465,7 +1668,83 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                         <div><div class="settings-row-label">Salvar rascunho ao sair</div><div class="settings-row-sub">Ao fechar o formulário com conteúdo digitado, salva como rascunho automaticamente</div></div>
                         <label class="toggle-switch"><input type="checkbox" ${prefs.autoSaveDraftOnLeave?'checked':''} onchange="updatePref('autoSaveDraftOnLeave',this.checked)"><span class="toggle-slider"></span></label>
                     </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Citação do dia</div><div class="settings-row-sub">Exibe uma frase inspiradora no topo da página</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.showQuote?'checked':''} onchange="updatePref('showQuote',this.checked);renderQuote()"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Mood tracker semanal</div><div class="settings-row-sub">Mini gráfico dos últimos 7 dias de humor</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.showMoodWeek?'checked':''} onchange="updatePref('showMoodWeek',this.checked);renderMoodWeek()"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Botão flutuante de notas</div><div class="settings-row-sub">Atalho para Notas Rápidas sempre visível</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.showNoteFab?'checked':''} onchange="updatePref('showNoteFab',this.checked);updateNoteFab()"><span class="toggle-slider"></span></label>
+                    </div>
                 </div>
+                <div class="settings-section">
+                    <div class="settings-section-title"><i class="fas fa-pen-fancy"></i> Escrita</div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Fonte das publicações</div><div class="settings-row-sub">Estilo tipográfico do texto</div></div>
+                        <select class="settings-select" onchange="updatePref('fontFamily',this.value)">
+                            <option value="poppins" ${prefs.fontFamily==='poppins'||!prefs.fontFamily?'selected':''}>Poppins (padrão)</option>
+                            <option value="serif" ${prefs.fontFamily==='serif'?'selected':''}>Serif (clássico)</option>
+                            <option value="mono" ${prefs.fontFamily==='mono'?'selected':''}>Mono (código)</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Espaçamento entre linhas</div><div class="settings-row-sub">Distância entre linhas de texto</div></div>
+                        <select class="settings-select" onchange="updatePref('lineHeight',this.value)">
+                            <option value="normal" ${!prefs.lineHeight||prefs.lineHeight==='normal'?'selected':''}>Normal</option>
+                            <option value="relaxed" ${prefs.lineHeight==='relaxed'?'selected':''}>Relaxado</option>
+                            <option value="tight" ${prefs.lineHeight==='tight'?'selected':''}>Denso</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Preview da descrição</div><div class="settings-row-sub">Quantas linhas mostrar na lista</div></div>
+                        <select class="settings-select" onchange="updatePref('descPreview',this.value)">
+                            <option value="auto" ${!prefs.descPreview||prefs.descPreview==='auto'?'selected':''}>Automático</option>
+                            <option value="2" ${prefs.descPreview==='2'?'selected':''}>2 linhas</option>
+                            <option value="4" ${prefs.descPreview==='4'?'selected':''}>4 linhas</option>
+                            <option value="full" ${prefs.descPreview==='full'?'selected':''}>Completo</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Prompts de escrita</div><div class="settings-row-sub">Botão "Inspire-me" ao criar publicações</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.showWritingPrompts!==false?'checked':''} onchange="updatePref('showWritingPrompts',this.checked)"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Modo foco automático</div><div class="settings-row-sub">Abre o editor em tela cheia por padrão</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.autoFocusMode?'checked':''} onchange="updatePref('autoFocusMode',this.checked)"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Modo leitura no título</div><div class="settings-row-sub">Clicar no título abre a publicação em leitura imersiva</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.showReadingMode!==false?'checked':''} onchange="updatePref('showReadingMode',this.checked)"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Numeração das publicações</div><div class="settings-row-sub">Exibe o número ordinal em cada post</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.postNumbering?'checked':''} onchange="updatePref('postNumbering',this.checked)"><span class="toggle-slider"></span></label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-section-title"><i class="fas fa-bullseye"></i> Meta Diária</div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Exibir meta de palavras</div><div class="settings-row-sub">Barra de progresso com palavras escritas hoje</div></div>
+                        <label class="toggle-switch"><input type="checkbox" ${prefs.showDailyGoal?'checked':''} onchange="updatePref('showDailyGoal',this.checked);renderDailyGoal()"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="settings-row">
+                        <div><div class="settings-row-label">Meta de palavras por dia</div><div class="settings-row-sub">0 = desativado</div></div>
+                        <select class="settings-select" onchange="updatePref('dailyWordGoal',Number(this.value));renderDailyGoal()">
+                            <option value="0" ${!prefs.dailyWordGoal?'selected':''}>Nenhuma</option>
+                            <option value="50" ${prefs.dailyWordGoal===50?'selected':''}>50 palavras</option>
+                            <option value="100" ${prefs.dailyWordGoal===100?'selected':''}>100 palavras</option>
+                            <option value="200" ${prefs.dailyWordGoal===200?'selected':''}>200 palavras</option>
+                            <option value="500" ${prefs.dailyWordGoal===500?'selected':''}>500 palavras</option>
+                            <option value="1000" ${prefs.dailyWordGoal===1000?'selected':''}>1000 palavras</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="settings-section">
                     <div class="settings-section-title"><i class="fas fa-trash-alt"></i> Dados</div>
                     <div class="settings-row">
@@ -1488,7 +1767,7 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 
         function resetPrefs() {
             if(!confirm('Redefinir todas as preferências para o padrão?')) return;
-            prefs = { showWordCount:false, compactView:false, showMood:true, confirmDelete:true, autoGreeting:true, fontSize:'normal', showEditedBadge:true, animatePosts:true, showDateFull:true, autoSaveDraft:false, autoSaveDraftOnLeave:false, showHashtagFilter:false, highlightFavorites:true, showHashtagsCount:true, galleryColumns:'auto', trashEnabled:true };
+            prefs = { showWordCount:false, compactView:false, showMood:true, confirmDelete:true, autoGreeting:true, fontSize:'normal', showEditedBadge:true, animatePosts:true, showDateFull:true, autoSaveDraft:false, autoSaveDraftOnLeave:false, showHashtagFilter:false, highlightFavorites:true, showHashtagsCount:true, galleryColumns:'auto', trashEnabled:true, fontFamily:'poppins', lineHeight:'normal', descPreview:'auto', dailyWordGoal:0, showDailyGoal:false, showReadingMode:true, showWritingPrompts:true, postNumbering:false, autoFocusMode:false, accentOnPosts:true, showStreakInHeader:true, confirmPostClose:false, writingSound:false };
             localStorage.setItem('userPrefs', JSON.stringify(prefs));
             applyPrefs(); updateGreeting(); renderPosts(); renderSettings();
             showNotification('Preferências redefinidas!', 'info');
@@ -1685,7 +1964,7 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
         }
 
         function forgotPostPassword() {
-            const postId = parseInt(document.getElementById('postUnlockInput').closest('.pw-modal-box').dataset.postId || document.querySelector('[data-unlock-id]')?.dataset.unlockId || pendingPostPwId);
+            const postId = parseInt(document.getElementById('postUnlockInput').closest('.pw-modal-box').dataset.postId || document.querySelector('[data-unlock-id]')?.dataset.unlockId || _unlockingPostId);
             closePostUnlock();
             showPopup({
                 type: 'warning',
@@ -1972,6 +2251,10 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             }
             document.getElementById('postModal').classList.add('show');
             document.body.style.overflow='hidden';
+            // Auto focus mode
+            if(mode==='new' && prefs.autoFocusMode) {
+                setTimeout(() => openFocusMode(), 300);
+            }
         }
 
         function closeModal() {
@@ -2486,22 +2769,31 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 
                 if(locked) {
                     return `<div class="post${post.isPinned?' pinned':''}${post.isFavorite?' favorite-post':''}">
-                        <div class="post-inner">
+                        <div class="post-inner" style="padding-bottom:14px;">
                             <div class="post-header">
                                 <div class="post-title-section">
                                     ${badges.length?`<div class="post-badges">${badges.join('')}</div>`:''}
-                                    <h2 class="post-title"><i class="fas fa-lock" style="font-size:0.7em;color:#555;margin-right:6px;"></i>${post.title}</h2>
+                                    <h2 class="post-title">${post.title}</h2>
                                     <div class="post-time">${timeInfo.join(' ')}</div>
                                 </div>
                                 <div class="post-actions">
+                                    <button class="post-action-btn" onclick="unlockPost(${post.id})" title="Desbloquear"><i class="fas fa-unlock-alt"></i></button>
                                     <button class="post-action-btn" onclick="deletePost(${post.id})" title="Excluir"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>
-                        <div class="post-lock-overlay" onclick="unlockPost(${post.id})" style="margin:0 24px 20px;display:flex;flex-direction:column;align-items:center;padding:22px 0;gap:8px;cursor:pointer;border-radius:12px;background:rgba(10,10,10,0.4);border:1px dashed rgba(255,255,255,0.08);transition:background 0.2s;">
-                            <i class="fas fa-lock" style="font-size:1.8em;color:#444;"></i>
-                            <div style="color:#666;font-size:0.85em;font-weight:500;">Conteúdo protegido</div>
-                            <div style="color:#444;font-size:0.75em;">Clique para digitar a senha</div>
+                        <div class="post-locked-body">
+                            <div class="post-blur-content" aria-hidden="true">
+                                <div class="blur-line" style="width:95%"></div>
+                                <div class="blur-line" style="width:85%"></div>
+                                <div class="blur-line" style="width:72%"></div>
+                                <div class="blur-line" style="width:60%;margin-bottom:0;"></div>
+                            </div>
+                            <div class="post-lock-overlay" onclick="unlockPost(${post.id})">
+                                <i class="fas fa-lock lock-ico"></i>
+                                <span class="lock-lbl">Conteúdo protegido</span>
+                                <span class="lock-hint">Clique para desbloquear</span>
+                            </div>
                         </div>
                     </div>`;
                 }
@@ -2510,15 +2802,17 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                     <div class="post-inner">
                         <div class="post-header">
                             <div class="post-title-section">
+                                ${prefs.postNumbering?`<div class="post-number">#${filtered.length - filtered.indexOf(post)}</div>`:''}
                                 ${badges.length?`<div class="post-badges">${badges.join('')}</div>`:''}
                                 ${prefs.showMood&&post.moodEmoji&&post.moodText?`<div class="post-mood-display"><span class="mood-emoji">${post.moodEmoji}</span><span style="color:#555;font-size:0.9em;">${post.moodText}</span></div>`:''}
-                                <h2 class="post-title">${post.title}</h2>
+                                <h2 class="post-title" style="${prefs.showReadingMode!==false?'cursor:pointer;':''}" onclick="${prefs.showReadingMode!==false?`openReading(${post.id})`:''}" title="${prefs.showReadingMode!==false?'Modo leitura':''}">${post.title}</h2>
                                 <div class="post-time">${timeInfo.join(' ')}</div>
                             </div>
                             <div class="post-actions">
                                 ${post.isDraft?`<button class="post-action-btn" onclick="publishDraft(${post.id})" title="Publicar"><i class="fas fa-paper-plane"></i></button>`:`<button class="post-action-btn" onclick="moveToDraft(${post.id})" title="Mover para rascunho"><i class="fas fa-archive"></i></button>`}
                                 <button class="post-action-btn${post.isFavorite?' active':''}" onclick="toggleFavorite(${post.id})" title="Favorito"><i class="fas fa-star"></i></button>
                                 <button class="post-action-btn${post.isPinned?' active':''}" onclick="togglePin(${post.id})" title="Fixar"><i class="fas fa-thumbtack"></i></button>
+                                <button class="post-action-btn" onclick="openReading(${post.id})" title="Modo leitura"><i class="fas fa-book-open"></i></button>
                                 <button class="post-action-btn" onclick="duplicatePost(${post.id})" title="Duplicar"><i class="fas fa-copy"></i></button>
                                 <button class="post-action-btn" onclick="openModal('edit',${post.id})" title="Editar"><i class="fas fa-edit"></i></button>
                                 <button class="post-action-btn" onclick="deletePost(${post.id})" title="Excluir"><i class="fas fa-trash"></i></button>
@@ -2527,7 +2821,7 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                     </div>
                     ${media}
                     <div class="post-body">
-                        <div class="post-description">${desc}</div>
+                        <div class="post-description${prefs.descPreview==='2'?' clamp-2':prefs.descPreview==='4'?' clamp-4':''}">${desc}</div>
                         ${prefs.showWordCount?`<div class="post-wordcount"><i class="fas fa-font"></i> ${post.description.trim().split(/\s+/).filter(w=>w).length} palavras &middot; <i class="fas fa-clock"></i> ~${Math.ceil(post.description.trim().split(/\s+/).filter(w=>w).length/200)} min de leitura</div>`:''}
                         ${audioHtml}
                     </div>
@@ -3004,6 +3298,11 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                         <div class="export-opt-label">Texto (.txt)</div>
                         <div class="export-opt-sub">Versão legível para leitura e impressão</div>
                     </div>
+                    <div class="export-opt-card" onclick="this.closest('.modal').remove();document.getElementById('bookModal').classList.add('show')" style="grid-column:span 2;">
+                        <div class="export-opt-icon"><i class="fas fa-book" style="font-size:0.7em;"></i></div>
+                        <div class="export-opt-label">📖 Livro HTML</div>
+                        <div class="export-opt-sub">Exportar como página bonita para imprimir ou arquivar</div>
+                    </div>
                 </div>
                 <div style="margin-top:14px;padding:14px;background:rgba(42,42,42,0.3);border-radius:10px;font-size:0.78em;color:#555;">
                     <i class="fas fa-info-circle"></i> As imagens e áudios não são incluídos na exportação TXT. Use o JSON para backup completo.
@@ -3091,6 +3390,478 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             </div>`;
         }
 
+        // ================================================================
+        // === NOVAS FUNCIONALIDADES V2 ===================================
+        // ================================================================
+
+        // --- CALENDÁRIO DE POSTS ---
+        let calYear = new Date().getFullYear();
+        let calMonth = new Date().getMonth();
+        function showCalendar() {
+            closeDropdown(); closeMobileMenu();
+            calYear = new Date().getFullYear();
+            calMonth = new Date().getMonth();
+            document.getElementById('calModal').classList.add('show');
+            renderCal();
+        }
+        function calShift(dir) {
+            calMonth += dir;
+            if(calMonth > 11) { calMonth = 0; calYear++; }
+            if(calMonth < 0) { calMonth = 11; calYear--; }
+            renderCal();
+        }
+        function renderCal() {
+            const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+            document.getElementById('calMonthLabel').textContent = `${months[calMonth]} ${calYear}`;
+            const firstDay = new Date(calYear, calMonth, 1).getDay();
+            const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+            const today = new Date();
+            // Map posts by day
+            const byDay = {};
+            posts.filter(p=>!p.isDraft).forEach(p => {
+                const d = new Date(p.timestamp);
+                if(d.getFullYear()===calYear && d.getMonth()===calMonth) {
+                    const k = d.getDate();
+                    byDay[k] = (byDay[k]||0)+1;
+                }
+            });
+            let html = '';
+            for(let i=0;i<firstDay;i++) html += `<div class="cal-day empty"></div>`;
+            for(let d=1;d<=daysInMonth;d++) {
+                const cnt = byDay[d]||0;
+                const isToday = d===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear();
+                const lvl = cnt===0?'':cnt===1?'p1':cnt<=3?'p2':'p3';
+                const dots = cnt>0?`<div class="cal-dot-row">${Array.from({length:Math.min(cnt,3)}).map(()=>`<div class="cal-dot ${lvl}"></div>`).join('')}</div>`:'';
+                html += `<div class="cal-day${isToday?' today':''}${cnt>0?' has-posts':''}" onclick="calDayClick(${d},${cnt})" title="${cnt} post${cnt!==1?'s':''}">
+                    <span class="cal-day-num">${d}</span>${dots}
+                </div>`;
+            }
+            document.getElementById('calGrid').innerHTML = html;
+            document.getElementById('calFooter').textContent = `Selecione um dia para ver as publicações`;
+        }
+        function calDayClick(day, cnt) {
+            document.querySelectorAll('.cal-day').forEach(el=>el.classList.remove('active-day'));
+            event.currentTarget.classList.add('active-day');
+            if(cnt===0) {
+                document.getElementById('calFooter').textContent = `Sem publicações neste dia`;
+                return;
+            }
+            const dayPosts = posts.filter(p=>{
+                const d = new Date(p.timestamp);
+                return !p.isDraft && d.getDate()===day && d.getMonth()===calMonth && d.getFullYear()===calYear;
+            });
+            document.getElementById('calFooter').innerHTML = `<strong style="color:#ccc;">${cnt} publicação${cnt!==1?'s':''}</strong>: ${dayPosts.map(p=>`<span style="color:#888;font-style:italic;">${p.title}</span>`).join(', ')}`;
+        }
+
+        // --- NOTAS RÁPIDAS ---
+        const NOTE_COLORS = ['#555','#7b5e7b','#5e7b6b','#5e6b7b','#7b6b5e','#7b7b5e'];
+        let selectedNoteColor = NOTE_COLORS[0];
+        let quickNotes = JSON.parse(localStorage.getItem('quickNotes')||'[]');
+
+        function openNotes() {
+            closeDropdown(); closeMobileMenu();
+            renderNoteColors();
+            renderNotesList();
+            document.getElementById('notesModal').classList.add('show');
+            setTimeout(()=>document.getElementById('notesTA').focus(), 200);
+        }
+        function renderNoteColors() {
+            document.getElementById('noteColors').innerHTML = NOTE_COLORS.map((c,i)=>
+                `<div class="nc-dot${c===selectedNoteColor?' sel':''}" style="background:${c}" onclick="selectNoteColor('${c}',this)" title="Cor ${i+1}"></div>`
+            ).join('');
+        }
+        function selectNoteColor(color, el) {
+            selectedNoteColor = color;
+            document.querySelectorAll('.nc-dot').forEach(d=>d.classList.remove('sel'));
+            el.classList.add('sel');
+        }
+        function addNote() {
+            const text = document.getElementById('notesTA').value.trim();
+            if(!text) return;
+            const note = { id: Date.now(), text, color: selectedNoteColor, pinned: false, createdAt: Date.now() };
+            quickNotes.unshift(note);
+            saveNotes();
+            renderNotesList();
+            document.getElementById('notesTA').value = '';
+            showNotification('Nota adicionada!', 'success');
+        }
+        function deleteNote(id) {
+            quickNotes = quickNotes.filter(n=>n.id!==id);
+            saveNotes();
+            renderNotesList();
+        }
+        function pinNote(id) {
+            const n = quickNotes.find(n=>n.id===id);
+            if(n){ n.pinned=!n.pinned; saveNotes(); renderNotesList(); }
+        }
+        function copyNote(id) {
+            const n = quickNotes.find(n=>n.id===id);
+            if(n){ navigator.clipboard.writeText(n.text).then(()=>showNotification('Copiado!','success')); }
+        }
+        function saveNotes() {
+            localStorage.setItem('quickNotes', JSON.stringify(quickNotes));
+            updateNoteFab();
+        }
+        function renderNotesList() {
+            const container = document.getElementById('notesList');
+            document.getElementById('notesCount').textContent = quickNotes.length ? `· ${quickNotes.length}` : '';
+            if(!quickNotes.length) {
+                container.innerHTML = `<div class="notes-empty-state"><i class="fas fa-sticky-note"></i><div>Nenhuma nota ainda</div><div style="font-size:0.78em;margin-top:5px;color:#1a1a1a;">Escreva algo rápido acima</div></div>`;
+                return;
+            }
+            const sorted = [...quickNotes].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||(b.createdAt-a.createdAt));
+            container.innerHTML = sorted.map(n => `
+                <div class="note-card${n.pinned?' note-pinned':''}">
+                    <div style="position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:${n.color};"></div>
+                    <div class="note-card-header">
+                        <span class="note-card-date">${new Date(n.createdAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+                        <div class="note-card-actions">
+                            <button class="note-act-btn${n.pinned?' pinned':''}" onclick="pinNote(${n.id})" title="${n.pinned?'Desafixar':'Fixar'}"><i class="fas fa-thumbtack"></i></button>
+                            <button class="note-act-btn" onclick="copyNote(${n.id})" title="Copiar"><i class="fas fa-copy"></i></button>
+                            <button class="note-act-btn" onclick="deleteNote(${n.id})" title="Excluir" style="color:#444;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="note-text">${n.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+                </div>`).join('');
+        }
+        function updateNoteFab() {
+            const fab = document.getElementById('noteFab');
+            if(!fab) return;
+            fab.style.display = prefs.showNoteFab ? 'flex' : 'none';
+            const badge = document.getElementById('noteFabBadge');
+            if(badge) { badge.style.display = quickNotes.length?'flex':'none'; badge.textContent = quickNotes.length; }
+        }
+
+        // --- CITAÇÃO DO DIA ---
+        const DAILY_QUOTES = [
+            { text: 'A vida é aquilo que acontece enquanto você está ocupado fazendo outros planos.', author: 'John Lennon' },
+            { text: 'O único modo de fazer um bom trabalho é amar o que você faz.', author: 'Steve Jobs' },
+            { text: 'Você não pode voltar atrás e mudar o começo, mas pode recomeçar e mudar o final.', author: 'C.S. Lewis' },
+            { text: 'Escrever é a maneira de falar sem ser interrompido.', author: 'Jules Renard' },
+            { text: 'Um diário não precisa ser inteligente, só precisa ser honesto.', author: 'Anaïs Nin' },
+            { text: 'Cada dia é uma oportunidade de recomeçar.', author: 'Desconhecido' },
+            { text: 'O que não se escreve, esquece-se. O que se escreve, transforma.', author: 'Desconhecido' },
+            { text: 'As memórias que não registramos desaparecem para sempre.', author: 'Desconhecido' },
+            { text: 'Escrever é pensar em papel.', author: 'William Zinsser' },
+            { text: 'Toda grande viagem começa com um único passo.', author: 'Lao Tsé' },
+            { text: 'Cuide dos pequenos momentos. Os grandes se cuidam sozinhos.', author: 'Emily Dickinson' },
+            { text: 'O passado é uma lanterna que ilumina os passos do presente.', author: 'Desconhecido' },
+            { text: 'Ser feliz é reconhecer que vale a pena viver apesar de todos os desafios.', author: 'Augusto Cury' },
+            { text: 'A gratidão transforma o que temos em suficiente.', author: 'Desconhecido' },
+            { text: 'O diário é um espelho que não mente.', author: 'Desconhecido' }
+        ];
+        function renderQuote() {
+            const strip = document.getElementById('quoteStrip');
+            if(!strip) return;
+            strip.style.display = prefs.showQuote ? 'block' : 'none';
+            if(!prefs.showQuote) return;
+            const today = new Date();
+            const idx = (today.getFullYear()*366 + today.getMonth()*31 + today.getDate()) % DAILY_QUOTES.length;
+            const q = DAILY_QUOTES[idx];
+            document.getElementById('quoteText').textContent = q.text;
+            document.getElementById('quoteAuthor').textContent = '— ' + q.author;
+        }
+
+        // --- MOOD TRACKER SEMANAL ---
+        function renderMoodWeek() {
+            const bar = document.getElementById('moodWeekBar');
+            if(!bar) return;
+            bar.style.display = prefs.showMoodWeek ? 'block' : 'none';
+            if(!prefs.showMoodWeek) return;
+            const days = ['D','S','T','Q','Q','S','S'];
+            const today = new Date();
+            let html = '<div class="mood-week-wrap"><div class="mood-week-title"><i class="fas fa-smile" style="margin-right:5px;"></i> Humor dos últimos 7 dias</div><div class="mood-week-grid">';
+            for(let i=6;i>=0;i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const dayStr = d.toDateString();
+                const dayPosts = posts.filter(p=>!p.isDraft&&new Date(p.timestamp).toDateString()===dayStr);
+                const mood = dayPosts.length ? (dayPosts.find(p=>p.moodEmoji)||dayPosts[0]).moodEmoji||'📝' : '';
+                const isToday = i===0;
+                html += `<div class="mood-week-day">
+                    <div class="mood-week-slot${!mood?' empty':''}" title="${d.toLocaleDateString('pt-BR')}">${mood||'·'}</div>
+                    <div class="mood-week-lbl${isToday?' is-today':''}">${isToday?'Hj':days[d.getDay()]}</div>
+                </div>`;
+            }
+            html += '</div></div>';
+            bar.innerHTML = html;
+        }
+
+        // --- EXPORTAR COMO LIVRO HTML ---
+        function exportAsBook() {
+            const incDrafts = document.getElementById('bookIncDrafts').checked;
+            const incTags = document.getElementById('bookIncTags').checked;
+            const incMood = document.getElementById('bookIncMood').checked;
+            const chrono = document.getElementById('bookChronological').checked;
+            const name = localStorage.getItem('userName') || 'Meu Diário';
+            let src = posts.filter(p => incDrafts ? true : !p.isDraft);
+            src = src.sort((a,b) => chrono ? a.timestamp-b.timestamp : b.timestamp-a.timestamp);
+            if(!src.length){ showNotification('Nenhuma publicação para exportar','warning'); return; }
+            const now = new Date().toLocaleDateString('pt-BR',{year:'numeric',month:'long',day:'numeric'});
+            const entries = src.map((p,i) => {
+                const d = new Date(p.timestamp);
+                const dateStr = d.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+                const timeStr = d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+                return `<article class="entry">
+                    <div class="entry-num">${chrono?i+1:src.length-i}</div>
+                    ${incMood&&p.moodEmoji?`<div class="entry-mood">${p.moodEmoji}</div>`:''}
+                    <h2 class="entry-title">${p.title}${p.isDraft?' <span style="color:#999;font-size:0.6em;">[Rascunho]</span>':''}</h2>
+                    <div class="entry-meta">${dateStr} às ${timeStr}${p.editedAt?` · Editado em ${new Date(p.editedAt).toLocaleDateString('pt-BR')}`:''}</div>
+                    <div class="entry-body">${p.description.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
+                    ${incTags&&p.hashtags&&p.hashtags.length?`<div class="entry-tags">${p.hashtags.map(t=>`<span class="entry-tag">${t}</span>`).join('')}</div>`:''}
+                </article>`;
+            }).join('');
+            const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${name}</title><style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Georgia,'Times New Roman',serif;background:#fdfaf5;color:#2a2218;line-height:1.8;padding:40px 20px;}
+.book-cover{text-align:center;padding:80px 20px 60px;border-bottom:2px solid #e8dcc8;margin-bottom:60px;}
+.book-cover h1{font-size:3em;font-weight:400;color:#1a1510;letter-spacing:-1px;margin-bottom:12px;}
+.book-cover .author{font-size:1.1em;color:#888;font-style:italic;margin-bottom:8px;}
+.book-cover .meta{font-size:0.82em;color:#bbb;margin-top:16px;}
+.entry{max-width:680px;margin:0 auto 70px;padding-bottom:70px;border-bottom:1px solid #e8dcc8;}
+.entry:last-child{border-bottom:none;}
+.entry-num{font-size:0.72em;color:#bbb;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.entry-mood{font-size:1.6em;margin-bottom:8px;}
+.entry-title{font-size:1.85em;font-weight:400;color:#1a1510;margin-bottom:8px;letter-spacing:-0.5px;line-height:1.3;}
+.entry-meta{font-size:0.78em;color:#bbb;margin-bottom:28px;font-style:italic;padding-bottom:16px;border-bottom:1px solid #f0e8d8;}
+.entry-body{font-size:1.05em;line-height:1.9;color:#3a3028;white-space:pre-wrap;word-break:break-word;}
+.entry-tags{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;}
+.entry-tag{padding:3px 10px;background:#f0e8d8;border-radius:20px;font-size:0.75em;color:#888;font-family:sans-serif;}
+@media print{body{padding:0;} .entry{page-break-after:always;} .book-cover{page-break-after:always;}}
+</style></head><body>
+<div class="book-cover">
+    <h1>📖 ${name}</h1>
+    <div class="author">Diário pessoal</div>
+    <div class="meta">Exportado em ${now} · ${src.length} publicação${src.length!==1?'s':''}</div>
+</div>
+${entries}
+</body></html>`;
+            const blob = new Blob([html],{type:'text/html;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href=url; a.download=`diario-${new Date().toISOString().slice(0,10)}.html`;
+            a.click(); URL.revokeObjectURL(url);
+            document.getElementById('bookModal').classList.remove('show');
+            showNotification('Livro exportado com sucesso!','success');
+        }
+
+        // ================================================================
+
+        // --- MODO FOCO ---
+        let focusLinkedToForm = false;
+        function openFocusMode() {
+            focusLinkedToForm = true;
+            const overlay = document.getElementById('focusOverlay');
+            const title = document.getElementById('postTitle').value;
+            const body = document.getElementById('postDescription').value;
+            document.getElementById('focusTitleTA').value = title;
+            document.getElementById('focusBodyTA').value = body;
+            updateFocusStats();
+            overlay.classList.add('show');
+            setTimeout(() => {
+                const ta = document.getElementById(body ? 'focusBodyTA' : 'focusTitleTA');
+                ta.focus();
+                ta.setSelectionRange(ta.value.length, ta.value.length);
+            }, 100);
+            autoResizeFocusTA();
+        }
+        function closeFocusMode() {
+            document.getElementById('focusOverlay').classList.remove('show');
+        }
+        function saveFocusAndClose() {
+            if (focusLinkedToForm) {
+                document.getElementById('postTitle').value = document.getElementById('focusTitleTA').value;
+                document.getElementById('postDescription').value = document.getElementById('focusBodyTA').value;
+                updateCC('titleCounter', document.getElementById('postTitle').value.length, 100);
+                updateCC('descCounter', document.getElementById('postDescription').value.length, 5000);
+            }
+            closeFocusMode();
+            showNotification('Texto aplicado!', 'success');
+        }
+        function syncFocusTitle(el) {
+            document.getElementById('focusTitleDisplay').textContent = el.value || 'Nova publicação';
+            updateFocusStats();
+            autoResizeFocusTA();
+        }
+        function syncFocusBody(el) {
+            updateFocusStats();
+            autoResizeFocusTA();
+        }
+        function updateFocusStats() {
+            const title = document.getElementById('focusTitleTA').value;
+            const body = document.getElementById('focusBodyTA').value;
+            const allText = (title + ' ' + body).trim();
+            const words = allText ? allText.split(/\s+/).filter(w=>w).length : 0;
+            const mins = Math.ceil(words / 200) || 0;
+            document.getElementById('focusWordCount').textContent = words + ' palavras';
+            document.getElementById('focusReadTime').textContent = mins + ' min';
+            document.getElementById('focusBottomCount').textContent = `${words} palavras · ${mins} min de leitura`;
+        }
+        function autoResizeFocusTA() {
+            ['focusTitleTA','focusBodyTA'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el){ el.style.height='auto'; el.style.height = el.scrollHeight + 'px'; }
+            });
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && document.getElementById('focusOverlay').classList.contains('show')) {
+                closeFocusMode();
+            }
+        });
+
+        // --- MODO LEITURA ---
+        function openReading(id) {
+            const post = posts.find(p=>p.id===id);
+            if(!post) return;
+            const imgs = post.images&&post.images.length>0?post.images:(post.image?[post.image]:[]);
+            const words = post.description ? post.description.trim().split(/\s+/).filter(w=>w).length : 0;
+            const mins = Math.ceil(words/200)||0;
+            const fmtD = new Date(post.timestamp).toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+            document.getElementById('readingContent').innerHTML = `
+                ${post.moodEmoji?`<div class="reading-mood">${post.moodEmoji}</div>`:''}
+                <div class="reading-title">${post.title}</div>
+                <div class="reading-meta">
+                    <span><i class="far fa-calendar-alt"></i> ${fmtD}</span>
+                    ${words>0?`<span><i class="fas fa-font"></i> ${words} palavras</span>`:''}
+                    ${mins>0?`<span><i class="fas fa-clock"></i> ${mins} min de leitura</span>`:''}
+                    ${post.moodText?`<span>${post.moodEmoji} ${post.moodText}</span>`:''}
+                </div>
+                ${imgs.length>0?`<div class="reading-media">${imgs.map(i=>`<img src="${i}" alt="${post.title}">`).join('')}</div>`:''}
+                <div class="reading-body">${renderDescWithLinks(post.description)}</div>
+                ${post.hashtags&&post.hashtags.length?`<div class="reading-tags">${post.hashtags.map(t=>`<span class="reading-tag">${t}</span>`).join('')}</div>`:''}
+                <div class="reading-footer">
+                    <span class="reading-footer-stat"><i class="fas fa-edit"></i> Escrito ${fmtAgo(post.timestamp)}</span>
+                    <button class="post-action-btn" onclick="openModal('edit',${post.id});closeReading()" title="Editar" style="opacity:1;"><i class="fas fa-edit"></i> Editar</button>
+                </div>`;
+            document.getElementById('readingOverlay').classList.add('show');
+        }
+        function closeReading() {
+            document.getElementById('readingOverlay').classList.remove('show');
+        }
+
+        // --- PROMPTS DE ESCRITA ---
+        const WRITING_PROMPTS = [
+            'O que foi a melhor coisa que aconteceu hoje?','Se eu pudesse mudar uma coisa nesta semana, o que seria?','Descreva um momento em que você sentiu orgulho de si mesmo','O que está ocupando seus pensamentos agora?','Uma conversa que ficou na sua cabeça hoje','Como você está se sentindo, de verdade?','Qual foi o maior desafio que você enfrentou recentemente?','Descreva o lugar onde você se sente mais em paz','Uma pessoa que fez diferença na sua semana','O que você aprendeu sobre si mesmo ultimamente?','O que você gostaria de dizer para o seu eu de 5 anos atrás?','Se amanhã fosse seu último dia, o que você faria?','Escreva sobre uma memória que você quer preservar para sempre','Qual sonho você ainda não contou para ninguém?','Descreva sua semana como se fosse uma estação do ano','O que te faz sentir mais vivo?','Uma coisa que você está evitando pensar mas precisa','Que tipo de pessoa você quer ser daqui a um ano?','Descreva um cheiro, sabor ou som que te transporta para outro momento','O que você gostaria que as pessoas soubessem sobre você?'
+        ];
+        let currentPromptIndex = 0;
+        let promptForFocus = false;
+        function openWritingPrompt(forFocus=false) {
+            promptForFocus = forFocus;
+            currentPromptIndex = Math.floor(Math.random() * WRITING_PROMPTS.length);
+            document.getElementById('promptText').textContent = WRITING_PROMPTS[currentPromptIndex];
+            document.getElementById('promptOverlay').classList.add('show');
+        }
+        function closePrompt() {
+            document.getElementById('promptOverlay').classList.remove('show');
+        }
+        function nextPrompt() {
+            currentPromptIndex = (currentPromptIndex + 1) % WRITING_PROMPTS.length;
+            const el = document.getElementById('promptText');
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(8px)';
+            el.style.transition = 'all 0.2s';
+            setTimeout(() => {
+                el.textContent = WRITING_PROMPTS[currentPromptIndex];
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 200);
+        }
+        function usePrompt() {
+            const txt = WRITING_PROMPTS[currentPromptIndex];
+            if(promptForFocus) {
+                document.getElementById('focusTitleTA').value = txt;
+                syncFocusTitle(document.getElementById('focusTitleTA'));
+            } else {
+                document.getElementById('postTitle').value = txt;
+                updateCC('titleCounter', txt.length, 100);
+                document.getElementById('postDescription').focus();
+            }
+            closePrompt();
+            showNotification('Prompt aplicado!', 'success');
+        }
+
+        // --- META DIÁRIA ---
+        function getTodayWords() {
+            const today = new Date().toDateString();
+            return posts.filter(p=>!p.isDraft && new Date(p.timestamp).toDateString()===today)
+                .reduce((s,p) => s + (p.description ? p.description.trim().split(/\s+/).filter(w=>w).length : 0), 0);
+        }
+        function renderDailyGoal() {
+            const bar = document.getElementById('dailyGoalBar');
+            if(!bar) return;
+            if(!prefs.showDailyGoal || !prefs.dailyWordGoal) { bar.style.display='none'; return; }
+            bar.style.display='block';
+            const current = getTodayWords();
+            const goal = prefs.dailyWordGoal;
+            const pct = Math.min(100, Math.round((current/goal)*100));
+            const done = pct >= 100;
+            bar.innerHTML = `<div class="daily-goal-wrap">
+                <span class="daily-goal-emoji">${done?'🎉':'✍️'}</span>
+                <div class="daily-goal-info">
+                    <div class="daily-goal-label">Meta do dia <span>${current} / ${goal} palavras · ${pct}%</span></div>
+                    <div class="daily-goal-track"><div class="daily-goal-fill${done?' done':''}" style="width:${pct}%"></div></div>
+                </div>
+            </div>`;
+        }
+
+        // --- BUSCA AVANÇADA ---
+        let advSelectedMoods = [];
+        function openAdvSearch() {
+            document.getElementById('advSearchModal').classList.add('show');
+            document.getElementById('advKeywords').focus();
+        }
+        function toggleAdvMood(el, emoji) {
+            document.querySelectorAll('.advsearch-mood-opt').forEach(e=>e.classList.remove('sel'));
+            el.classList.add('sel');
+            advSelectedMoods = emoji ? [emoji] : [];
+            updateAdvResultsCount();
+        }
+        function updateAdvResultsCount() {
+            const kw = document.getElementById('advKeywords').value.toLowerCase().trim();
+            const dateFrom = document.getElementById('advDateFrom').value;
+            const dateTo = document.getElementById('advDateTo').value;
+            const hashtag = document.getElementById('advHashtag').value.trim();
+            const count = getAdvResults(kw,dateFrom,dateTo,hashtag).length;
+            document.getElementById('advResultsCount').textContent = count > 0 ? `${count} publicação${count!==1?'s':''} encontrada${count!==1?'s':''}` : 'Nenhuma publicação encontrada';
+        }
+        function getAdvResults(kw,dateFrom,dateTo,hashtag) {
+            return posts.filter(p => {
+                if(p.isDraft) return false;
+                if(kw && !(p.title.toLowerCase().includes(kw)||p.description.toLowerCase().includes(kw))) return false;
+                if(dateFrom && new Date(p.timestamp) < new Date(dateFrom)) return false;
+                if(dateTo && new Date(p.timestamp) > new Date(dateTo+'T23:59:59')) return false;
+                if(advSelectedMoods.length && !advSelectedMoods.includes(p.moodEmoji)) return false;
+                if(hashtag && !p.hashtags.some(t=>t.toLowerCase().includes(hashtag.toLowerCase()))) return false;
+                return true;
+            });
+        }
+        function runAdvSearch() {
+            const kw = document.getElementById('advKeywords').value.toLowerCase().trim();
+            const dateFrom = document.getElementById('advDateFrom').value;
+            const dateTo = document.getElementById('advDateTo').value;
+            const hashtag = document.getElementById('advHashtag').value.trim();
+            const results = getAdvResults(kw,dateFrom,dateTo,hashtag);
+            document.getElementById('advSearchModal').classList.remove('show');
+            renderList(results);
+            updateSecTitle(`Busca Avançada · ${results.length} resultado${results.length!==1?'s':''}`, 'search');
+            if(results.length===0) showNotification('Nenhuma publicação encontrada', 'info');
+        }
+        function clearAdvSearch() {
+            document.getElementById('advKeywords').value='';
+            document.getElementById('advDateFrom').value='';
+            document.getElementById('advDateTo').value='';
+            document.getElementById('advHashtag').value='';
+            advSelectedMoods=[];
+            document.querySelectorAll('.advsearch-mood-opt').forEach(e=>e.classList.remove('sel'));
+            document.querySelector('.advsearch-mood-opt[data-emoji=""]').classList.add('sel');
+            document.getElementById('advResultsCount').textContent='';
+        }
+        ['advKeywords','advHashtag','advDateFrom','advDateTo'].forEach(id=>{
+            const el = document.getElementById(id);
+            if(el) el.addEventListener('input', updateAdvResultsCount);
+        });
+
+        // ================================================================
         // === PATCH showStats COM MELHORIAS ===
         const _origShowStats = showStats;
         showStats = function() {
@@ -3149,6 +3920,7 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
         renderPosts = function() {
             _origRenderPosts();
             renderMoodFilter();
+            renderDailyGoal();
         };
 
         // === SETTINGS: Adicionar seção de tema ===
@@ -3171,509 +3943,198 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             }, 50);
         };
 
-        // === FIREBASE BRIDGE (expose state to module script) ===
-        window.getAppPosts   = () => posts;
-        window.getAppTrash   = () => trash;
-        window.getPostById   = (id) => posts.find(p => p.id === id);
-        window.loadStateFromStorage = function() {
-            posts        = JSON.parse(localStorage.getItem('diaryPosts'))   || [];
-            trash        = JSON.parse(localStorage.getItem('diaryTrash'))   || [];
-            userName     = localStorage.getItem('userName') || '';
-            sortOrder    = localStorage.getItem('sortOrder') || 'newest';
-            viewMode     = localStorage.getItem('viewMode') || 'list';
-            menuBadges   = JSON.parse(localStorage.getItem('menuBadges'))   || { drafts:0, favorites:0, gallery:0, trash:0 };
-            usedHashtags = JSON.parse(localStorage.getItem('usedHashtags')) || [];
-            appPassword  = localStorage.getItem('appPassword') || null;
-            appUnlocked  = !appPassword;
-            const savedPrefs = JSON.parse(localStorage.getItem('userPrefs') || '{}');
-            Object.assign(prefs, savedPrefs);
-        };
-
     </script>
+    <!-- Notas FAB -->
+    <div class="note-fab" id="noteFab" onclick="openNotes()" title="Notas Rápidas" style="display:none">
+        <i class="fas fa-sticky-note"></i>
+        <span class="note-fab-badge" id="noteFabBadge" style="display:none">0</span>
+    </div>
 
-    <!-- Firebase Integration (v3 – popup + redirect fallback) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+    <!-- === CALENDÁRIO === -->
+    <div class="modal" id="calModal" onclick="if(event.target===this)this.classList.remove('show')">
+        <div class="cal-modal-box" onclick="event.stopPropagation()">
+            <div class="cal-header">
+                <h2><i class="fas fa-calendar-alt" style="color:#555;font-size:0.9em;"></i> Calendário</h2>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="cal-nav">
+                        <button class="cal-nav-btn" onclick="calShift(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <span class="cal-month-label" id="calMonthLabel"></span>
+                        <button class="cal-nav-btn" onclick="calShift(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <button class="close-btn" onclick="document.getElementById('calModal').classList.remove('show')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="cal-body">
+                <div class="cal-weekdays">
+                    <div class="cal-wd">Dom</div><div class="cal-wd">Seg</div><div class="cal-wd">Ter</div>
+                    <div class="cal-wd">Qua</div><div class="cal-wd">Qui</div><div class="cal-wd">Sex</div><div class="cal-wd">Sáb</div>
+                </div>
+                <div class="cal-grid" id="calGrid"></div>
+            </div>
+            <div class="cal-footer" id="calFooter">Selecione um dia para ver as publicações</div>
+        </div>
+    </div>
 
+    <!-- === NOTAS RÁPIDAS === -->
+    <div class="modal" id="notesModal" onclick="if(event.target===this)this.classList.remove('show')">
+        <div class="notes-modal-box" onclick="event.stopPropagation()">
+            <div class="notes-header">
+                <h2><i class="fas fa-sticky-note" style="color:#555;font-size:0.9em;"></i> Notas Rápidas <span style="font-size:0.7em;color:#333;font-weight:400;" id="notesCount"></span></h2>
+                <button class="close-btn" onclick="document.getElementById('notesModal').classList.remove('show')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="notes-list" id="notesList"></div>
+            <div class="notes-add-wrap">
+                <textarea class="notes-add-ta" id="notesTA" placeholder="Escreva uma nota rápida..." rows="3" onkeydown="if(event.ctrlKey&&event.key==='Enter'){addNote();event.preventDefault();}"></textarea>
+                <div class="notes-add-row">
+                    <div class="note-colors" id="noteColors"></div>
+                    <button class="btn btn-primary" style="padding:8px 18px;font-size:0.82em;" onclick="addNote()"><i class="fas fa-plus"></i> Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAfFu0ZJldAF_eYWQ4KKXMmeaz0LK1xvAk",
-            authDomain: "meudiariodigital-3108a.firebaseapp.com",
-            projectId: "meudiariodigital-3108a",
-            storageBucket: "meudiariodigital-3108a.firebasestorage.app",
-            messagingSenderId: "478403433306",
-            appId: "1:478403433306:web:0c1b617fb21a20ae681963"
-        };
+    <!-- === EXPORTAR COMO LIVRO === -->
+    <div class="modal" id="bookModal" onclick="if(event.target===this)this.classList.remove('show')">
+        <div class="book-box" onclick="event.stopPropagation()">
+            <div class="book-header">
+                <h2><i class="fas fa-book" style="color:#555;font-size:0.9em;"></i> Exportar como Livro</h2>
+                <button class="close-btn" onclick="document.getElementById('bookModal').classList.remove('show')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="book-body">
+                <div class="book-opt">
+                    <div class="book-opt-info"><div class="book-opt-label">Incluir rascunhos</div><div class="book-opt-sub">Adiciona posts marcados como rascunho</div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="bookIncDrafts"><span class="toggle-slider"></span></label>
+                </div>
+                <div class="book-opt">
+                    <div class="book-opt-info"><div class="book-opt-label">Incluir hashtags</div><div class="book-opt-sub">Mostra as tags em cada publicação</div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="bookIncTags" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="book-opt">
+                    <div class="book-opt-info"><div class="book-opt-label">Incluir humor</div><div class="book-opt-sub">Exibe o emoji de humor de cada dia</div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="bookIncMood" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="book-opt">
+                    <div class="book-opt-info"><div class="book-opt-label">Ordem cronológica</div><div class="book-opt-sub">Do mais antigo para o mais recente</div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="bookChronological" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="book-preview-card">
+                    <div class="book-preview-title"><i class="fas fa-eye"></i> Pré-visualização</div>
+                    <div class="book-preview-lines">
+                        <div class="book-preview-line title-line"></div>
+                        <div class="book-preview-line"></div>
+                        <div class="book-preview-line short"></div>
+                        <div class="book-preview-line"></div>
+                        <div class="book-preview-line" style="width:50%"></div>
+                    </div>
+                </div>
+                <div style="font-size:0.75em;color:#333;text-align:center;"><i class="fas fa-info-circle"></i> Gera um arquivo HTML pronto para imprimir ou salvar como PDF</div>
+            </div>
+            <div class="book-footer">
+                <button class="btn" style="flex:1;justify-content:center;" onclick="document.getElementById('bookModal').classList.remove('show')">Cancelar</button>
+                <button class="btn btn-primary" style="flex:2;justify-content:center;" onclick="exportAsBook()"><i class="fas fa-download"></i> Gerar Livro</button>
+            </div>
+        </div>
+    </div>
 
-        const app  = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db   = getFirestore(app);
-        const stor = getStorage(app);
-        const provider = new GoogleAuthProvider();
-        provider.addScope('profile');
-        provider.addScope('email');
-        provider.setCustomParameters({ prompt: 'select_account' });
+    <!-- === MODO FOCO === -->
+    <div class="focus-overlay" id="focusOverlay">
+        <div class="focus-topbar">
+            <div class="focus-title-display" id="focusTitleDisplay">Nova publicação</div>
+            <div class="focus-stats">
+                <span class="focus-stat"><i class="fas fa-font" style="color:#2a2a2a;font-size:0.85em;"></i> <span id="focusWordCount">0 palavras</span></span>
+                <span class="focus-stat"><i class="fas fa-clock" style="color:#2a2a2a;font-size:0.85em;"></i> <span id="focusReadTime">0 min</span></span>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="inspire-btn" onclick="openWritingPrompt(true)" title="Me inspire"><i class="fas fa-magic"></i> Inspirar</button>
+                <button class="focus-exit-btn" onclick="closeFocusMode()"><i class="fas fa-compress-alt"></i> Sair do foco</button>
+            </div>
+        </div>
+        <div class="focus-body">
+            <div class="focus-editor">
+                <textarea class="focus-editor-title" id="focusTitleTA" rows="1" placeholder="Título da publicação..." oninput="syncFocusTitle(this)"></textarea>
+                <textarea class="focus-editor-body" id="focusBodyTA" placeholder="Comece a escrever... o espaço é todo seu." oninput="syncFocusBody(this)"></textarea>
+            </div>
+        </div>
+        <div class="focus-bottombar">
+            <span class="focus-wordcount" id="focusBottomCount">0 palavras · 0 min de leitura</span>
+            <div style="display:flex;gap:8px;">
+                <button class="focus-exit-btn" onclick="closeFocusMode()">Cancelar</button>
+                <button class="focus-save-btn" onclick="saveFocusAndClose()"><i class="fas fa-check"></i> Usar texto</button>
+            </div>
+        </div>
+    </div>
 
-        // ── Enable login button now that Firebase is ready ────────
-        (function enableBtn() {
-            const GOOGLE_SVG_INLINE = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>`;
-            const btn = document.getElementById('googleSignInBtn');
-            if (btn) {
-                btn.disabled = false;
-                btn.classList.remove('loading');
-                btn.innerHTML = `${GOOGLE_SVG_INLINE} Entrar com o Google`;
-            }
-        })();
+    <!-- === MODO LEITURA === -->
+    <div class="reading-overlay" id="readingOverlay" onclick="if(event.target===this)closeReading()">
+        <div class="reading-modal" id="readingModal">
+            <button class="reading-close" onclick="closeReading()"><i class="fas fa-times"></i></button>
+            <div id="readingContent"></div>
+        </div>
+    </div>
 
-        // ── Sync UI ──────────────────────────────────────────────
-        let syncTimer = null;
-        function showSync(msg) {
-            clearTimeout(syncTimer);
-            const el   = document.getElementById('syncIndicator');
-            const msg2 = document.getElementById('syncMsg');
-            if (el)   { el.classList.add('show'); el.classList.remove('error'); }
-            if (msg2)   msg2.textContent = msg || 'Salvando...';
-        }
-        function hideSync() {
-            syncTimer = setTimeout(() => {
-                const el = document.getElementById('syncIndicator');
-                if (el) el.classList.remove('show');
-            }, 1200);
-        }
-        function showSyncError(msg) {
-            const el   = document.getElementById('syncIndicator');
-            const msg2 = document.getElementById('syncMsg');
-            if (el)   { el.classList.add('show', 'error'); }
-            if (msg2)   msg2.textContent = '⚠ ' + msg;
-            setTimeout(() => { if (el) el.classList.remove('show', 'error'); }, 4000);
-        }
+    <!-- === PROMPTS DE ESCRITA === -->
+    <div class="prompt-overlay" id="promptOverlay" onclick="if(event.target===this)closePrompt()">
+        <div class="prompt-box">
+            <span class="prompt-icon">✨</span>
+            <div class="prompt-label">Prompt de escrita</div>
+            <div class="prompt-text" id="promptText">...</div>
+            <div class="prompt-actions">
+                <button class="prompt-btn prompt-use-btn" onclick="usePrompt()"><i class="fas fa-pen"></i> Usar como título</button>
+                <button class="prompt-btn prompt-next-btn" onclick="nextPrompt()"><i class="fas fa-random"></i> Outro</button>
+                <button class="prompt-btn prompt-close-btn" onclick="closePrompt()">Fechar</button>
+            </div>
+        </div>
+    </div>
 
-        // ── Strip base64 for Firestore (1 MB doc limit) ──────────
-        function stripMedia(post) {
-            const p = { ...post };
-            if (Array.isArray(p.images)) {
-                p.images = p.images.map(i => (i && i.startsWith('data:')) ? null : i).filter(Boolean);
-            }
-            if (p.image  && p.image.startsWith('data:'))  p.image  = null;
-            if (p.audio  && p.audio.startsWith('data:'))  { p.audio = null; }
-            return Object.fromEntries(Object.entries(p).filter(([, v]) => v !== undefined));
-        }
+    <!-- === BUSCA AVANÇADA === -->
+    <div class="modal" id="advSearchModal" onclick="if(event.target===this)this.classList.remove('show')">
+        <div class="advsearch-box" onclick="event.stopPropagation()">
+            <div class="advsearch-header">
+                <h2><i class="fas fa-sliders-h"></i> Busca Avançada</h2>
+                <button class="close-btn" onclick="document.getElementById('advSearchModal').classList.remove('show')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="advsearch-body">
+                <div>
+                    <div class="advsearch-label"><i class="fas fa-font"></i> Palavras-chave</div>
+                    <input type="text" class="advsearch-keywords" id="advKeywords" placeholder="Buscar no título e conteúdo...">
+                </div>
+                <div>
+                    <div class="advsearch-label"><i class="fas fa-calendar-alt"></i> Período</div>
+                    <div class="advsearch-date-row">
+                        <input type="date" id="advDateFrom" title="De">
+                        <input type="date" id="advDateTo" title="Até">
+                    </div>
+                </div>
+                <div>
+                    <div class="advsearch-label"><i class="fas fa-smile"></i> Humor</div>
+                    <div class="advsearch-moods" id="advMoods">
+                        <div class="advsearch-mood-opt" data-emoji="" onclick="toggleAdvMood(this,'')" style="font-size:0.78em;padding:6px 14px;color:#666;">Todos</div>
+                        <div class="advsearch-mood-opt sel" data-emoji="😍" onclick="toggleAdvMood(this,'😍')">😍</div>
+                        <div class="advsearch-mood-opt" data-emoji="😃" onclick="toggleAdvMood(this,'😃')">😃</div>
+                        <div class="advsearch-mood-opt" data-emoji="😂" onclick="toggleAdvMood(this,'😂')">😂</div>
+                        <div class="advsearch-mood-opt" data-emoji="🥳" onclick="toggleAdvMood(this,'🥳')">🥳</div>
+                        <div class="advsearch-mood-opt" data-emoji="🤔" onclick="toggleAdvMood(this,'🤔')">🤔</div>
+                        <div class="advsearch-mood-opt" data-emoji="🥺" onclick="toggleAdvMood(this,'🥺')">🥺</div>
+                        <div class="advsearch-mood-opt" data-emoji="😭" onclick="toggleAdvMood(this,'😭')">😭</div>
+                        <div class="advsearch-mood-opt" data-emoji="😡" onclick="toggleAdvMood(this,'😡')">😡</div>
+                        <div class="advsearch-mood-opt" data-emoji="🥱" onclick="toggleAdvMood(this,'🥱')">🥱</div>
+                        <div class="advsearch-mood-opt" data-emoji="🤒" onclick="toggleAdvMood(this,'🤒')">🤒</div>
+                        <div class="advsearch-mood-opt" data-emoji="😳" onclick="toggleAdvMood(this,'😳')">😳</div>
+                        <div class="advsearch-mood-opt" data-emoji="😲" onclick="toggleAdvMood(this,'😲')">😲</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="advsearch-label"><i class="fas fa-hashtag"></i> Hashtag específica</div>
+                    <input type="text" class="advsearch-keywords" id="advHashtag" placeholder="Ex: #viagem">
+                </div>
+                <div class="advsearch-results-count" id="advResultsCount"></div>
+            </div>
+            <div class="advsearch-footer">
+                <button class="btn" style="flex:1;justify-content:center;" onclick="clearAdvSearch()"><i class="fas fa-times"></i> Limpar</button>
+                <button class="btn btn-primary" style="flex:2;justify-content:center;" onclick="runAdvSearch()"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+        </div>
+    </div>
 
-        // ── Background: upload base64 media → update Firestore with URLs ──
-        async function uploadMediaBg(post, uid) {
-            let changed = false;
-            const p = { ...post };
-            if (Array.isArray(p.images)) {
-                const urls = [];
-                for (let i = 0; i < p.images.length; i++) {
-                    const img = p.images[i];
-                    if (img && img.startsWith('data:')) {
-                        try {
-                            const r = ref(stor, `u/${uid}/img/${p.id}/${i}`);
-                            await uploadString(r, img, 'data_url');
-                            urls.push(await getDownloadURL(r));
-                            changed = true;
-                        } catch { urls.push(null); }
-                    } else { urls.push(img); }
-                }
-                p.images = urls.filter(Boolean);
-                p.image  = p.images[0] || null;
-            }
-            if (post.audio && post.audio.startsWith('data:')) {
-                try {
-                    const r = ref(stor, `u/${uid}/audio/${p.id}`);
-                    await uploadString(r, post.audio, 'data_url');
-                    p.audio = await getDownloadURL(r);
-                    changed = true;
-                } catch { p.audio = null; }
-            }
-            if (changed) {
-                await setDoc(doc(db, 'users', uid, 'posts', String(p.id)), { images: p.images, image: p.image, audio: p.audio }, { merge: true });
-                // Update localStorage with URLs
-                try {
-                    const arr = JSON.parse(localStorage.getItem('diaryPosts') || '[]');
-                    const idx = arr.findIndex(x => x.id === p.id);
-                    if (idx !== -1) {
-                        arr[idx] = { ...arr[idx], images: p.images, image: p.image, audio: p.audio };
-                        localStorage.setItem('diaryPosts', JSON.stringify(arr));
-                        if (typeof window.loadStateFromStorage === 'function') window.loadStateFromStorage();
-                    }
-                } catch {}
-            }
-        }
-
-        // ── Core write helpers ────────────────────────────────────
-        function fsPost(post, uid) {
-            // Instant: save lean doc (no base64)
-            const lean = stripMedia(post);
-            setDoc(doc(db, 'users', uid, 'posts', String(post.id)), lean).catch(console.error);
-            // Background: upload media
-            uploadMediaBg(post, uid).catch(console.error);
-        }
-
-        function fsDelPost(id, uid) {
-            deleteDoc(doc(db, 'users', uid, 'posts', String(id))).catch(console.error);
-        }
-
-        function fsTrash(post, uid) {
-            const lean = stripMedia(post);
-            setDoc(doc(db, 'users', uid, 'trash', String(post.id)), lean).catch(console.error);
-        }
-
-        function fsDelTrash(id, uid) {
-            deleteDoc(doc(db, 'users', uid, 'trash', String(id))).catch(console.error);
-        }
-
-        function fsProfile(uid) {
-            const profile = {
-                userName:     localStorage.getItem('userName')     || '',
-                userBio:      localStorage.getItem('userBio')      || '',
-                writingGoal:  localStorage.getItem('writingGoal')  || '',
-                prefs:        JSON.parse(localStorage.getItem('userPrefs')    || '{}'),
-                usedHashtags: JSON.parse(localStorage.getItem('usedHashtags') || '[]'),
-                sortOrder:    localStorage.getItem('sortOrder')    || 'newest',
-                viewMode:     localStorage.getItem('viewMode')     || 'list',
-                menuBadges:   JSON.parse(localStorage.getItem('menuBadges')   || '{}'),
-                appPassword:  localStorage.getItem('appPassword')  || null,
-                theme:        localStorage.getItem('colorTheme')  || null,
-            };
-            setDoc(doc(db, 'users', uid, 'data', 'profile'), profile).catch(console.error);
-        }
-
-        // ── Load cloud → merge into localStorage ──────────────────
-        async function loadCloud(uid) {
-            showSync('Carregando seu diário...');
-            try {
-                const [profSnap, postsSnap, trashSnap] = await Promise.all([
-                    getDoc(doc(db, 'users', uid, 'data', 'profile')),
-                    getDocs(collection(db, 'users', uid, 'posts')),
-                    getDocs(collection(db, 'users', uid, 'trash'))
-                ]);
-
-                if (profSnap.exists()) {
-                    const d = profSnap.data();
-                    if (d.userName)    localStorage.setItem('userName', d.userName);
-                    if (d.userBio)     localStorage.setItem('userBio', d.userBio);
-                    if (d.writingGoal) localStorage.setItem('writingGoal', d.writingGoal);
-                    if (d.prefs && Object.keys(d.prefs).length) localStorage.setItem('userPrefs', JSON.stringify(d.prefs));
-                    if (d.usedHashtags && d.usedHashtags.length) localStorage.setItem('usedHashtags', JSON.stringify(d.usedHashtags));
-                    if (d.sortOrder)   localStorage.setItem('sortOrder', d.sortOrder);
-                    if (d.viewMode)    localStorage.setItem('viewMode', d.viewMode);
-                    if (d.menuBadges)  localStorage.setItem('menuBadges', JSON.stringify(d.menuBadges));
-                    if (d.appPassword) localStorage.setItem('appPassword', d.appPassword);
-                    if (d.theme)       localStorage.setItem('colorTheme', d.theme);
-                }
-
-                if (!postsSnap.empty) {
-                    const cloud = [];
-                    postsSnap.forEach(d => cloud.push(d.data()));
-                    // Preserve local base64 media that hasn't been uploaded yet
-                    const local = JSON.parse(localStorage.getItem('diaryPosts') || '[]');
-                    const localMap = Object.fromEntries(local.map(p => [String(p.id), p]));
-                    const cloudIds = new Set(cloud.map(cp => String(cp.id)));
-                    const merged = cloud.map(cp => {
-                        const lp = localMap[String(cp.id)];
-                        if (lp) {
-                            if ((!cp.images || !cp.images.length) && lp.images && lp.images.length) cp.images = lp.images;
-                            if (!cp.image && lp.image) cp.image = lp.image;
-                            if (!cp.audio && lp.audio) cp.audio = lp.audio;
-                        }
-                        return cp;
-                    });
-                    // BUG FIX: também incluir posts que existem localmente mas ainda não chegaram à nuvem
-                    // (ex: falha de rede, regras do Firestore, posts criados antes do primeiro login)
-                    local.forEach(lp => {
-                        if (!cloudIds.has(String(lp.id))) {
-                            merged.push(lp);
-                            console.warn('[loadCloud] Post local não encontrado na nuvem, preservando:', lp.id);
-                            // Re-envia para a nuvem assim que possível
-                            setTimeout(() => fsPost(lp, uid), 200);
-                        }
-                    });
-                    localStorage.setItem('diaryPosts', JSON.stringify(merged));
-                }
-
-                if (!trashSnap.empty) {
-                    const t = [];
-                    trashSnap.forEach(d => t.push(d.data()));
-                    localStorage.setItem('diaryTrash', JSON.stringify(t));
-                }
-            } catch (e) {
-                console.error('loadCloud error:', e);
-                showSyncError('Erro ao carregar dados da nuvem. Usando dados locais.');
-                return;
-            }
-            hideSync();
-        }
-
-        // ── Patch all app functions (call BEFORE launchApp) ───────
-        function applyPatches(uid) {
-
-            // finalizeSave — instant local + async cloud
-            const _fin = window.finalizeSave;
-            window.finalizeSave = function(post, isDraft) {
-                _fin(post, isDraft);            // saves to localStorage, updates UI immediately
-                showSync('Salvando...');
-                fsPost(post, uid);
-                fsProfile(uid);
-                hideSync();
-            };
-
-            // saveNameFromPopup — also persist profile to cloud
-            const _namePopup = window.saveNameFromPopup;
-            window.saveNameFromPopup = function() {
-                _namePopup();
-                fsProfile(uid);
-            };
-
-            // saveProfile (edit profile modal)
-            const _savePro = window.saveProfile;
-            window.saveProfile = function() {
-                _savePro();
-                fsProfile(uid);
-            };
-
-            // deletePost
-            const _del = window.deletePost;
-            window.deletePost = async function(id) {
-                // BUG FIX: salva contagem antes e depois para saber se exclusão realmente ocorreu
-                const postsBefore = (window.getAppPosts || (() => []))().length;
-                const trashBefore = JSON.parse(localStorage.getItem('diaryTrash') || '[]').length;
-                await _del(id);
-                const postsAfter = (window.getAppPosts || (() => []))().length;
-                // Só sincroniza com a nuvem se o post foi de fato removido dos posts locais
-                if (postsAfter < postsBefore) {
-                    fsDelPost(id, uid);
-                    const trashArr = JSON.parse(localStorage.getItem('diaryTrash') || '[]');
-                    if (trashArr.length > trashBefore) {
-                        const moved = trashArr.find(p => p.id === id);
-                        if (moved) fsTrash(moved, uid);
-                    }
-                }
-            };
-
-            // restoreFromTrash
-            const _restore = window.restoreFromTrash;
-            window.restoreFromTrash = function(id) {
-                _restore(id);
-                const p = (window.getPostById || (() => null))(id);
-                if (p) fsPost(p, uid);
-                fsDelTrash(id, uid);
-            };
-
-            // deleteFromTrashPermanently
-            const _delPerm = window.deleteFromTrashPermanently;
-            window.deleteFromTrashPermanently = async function(id) {
-                await _delPerm(id);
-                fsDelTrash(id, uid);
-            };
-
-            // emptyTrashAll
-            const _emptyTrash = window.emptyTrashAll;
-            window.emptyTrashAll = async function() {
-                await _emptyTrash();
-                getDocs(collection(db, 'users', uid, 'trash')).then(snap => {
-                    const batch = writeBatch(db);
-                    snap.forEach(d => batch.delete(d.ref));
-                    batch.commit().catch(console.error);
-                });
-            };
-
-            // togglePin / toggleFavorite / publishDraft / moveToDraft
-            const wrap = (orig) => function(id) {
-                orig(id);
-                const p = (window.getPostById || (() => null))(id);
-                if (p) fsPost(p, uid);
-            };
-            window.togglePin      = wrap(window.togglePin);
-            window.toggleFavorite = wrap(window.toggleFavorite);
-            window.publishDraft   = wrap(window.publishDraft);
-            window.moveToDraft    = wrap(window.moveToDraft);
-
-            // duplicatePost
-            const _dup = window.duplicatePost;
-            window.duplicatePost = function(id) {
-                _dup(id);
-                const posts = (window.getAppPosts || (() => []))();
-                if (posts.length) fsPost(posts[0], uid);
-            };
-
-            // Profile-only changes (fire and forget)
-            const wrapPro = (orig) => function(...args) { orig(...args); fsProfile(uid); };
-            window.updatePref     = wrapPro(window.updatePref);
-            window.addHashtag     = wrapPro(window.addHashtag);
-            window.setSortOrder   = wrapPro(window.setSortOrder);
-            window.setViewMode    = wrapPro(window.setViewMode);
-            window.addMenuBadge   = wrapPro(window.addMenuBadge);
-            window.clearMenuBadge = wrapPro(window.clearMenuBadge);
-
-            // BUG FIX: sincronizar mudanças de senha do app com a nuvem
-            const _setPw = window.setPw;
-            window.setPw = function() { _setPw(); fsProfile(uid); };
-            const _changePw = window.changePw;
-            window.changePw = function() { _changePw(); fsProfile(uid); };
-            const _verifyAndAct = window.verifyAndAct;
-            window.verifyAndAct = function(action) { _verifyAndAct(action); fsProfile(uid); };
-
-            // BUG FIX: sincronizar resetPrefs com a nuvem
-            const _resetPrefs = window.resetPrefs;
-            window.resetPrefs = function() { _resetPrefs(); fsProfile(uid); };
-
-            // BUG FIX: sincronizar mudanças de tema com a nuvem
-            const _applyTheme = window.applyTheme;
-            window.applyTheme = function(themeId) { _applyTheme(themeId); fsProfile(uid); };
-
-            // doReset — also wipe cloud
-            const _reset = window.doReset;
-            window.doReset = async function() {
-                await _reset();
-                showSync('Limpando dados na nuvem...');
-                try {
-                    const [ps, ts] = await Promise.all([
-                        getDocs(collection(db, 'users', uid, 'posts')),
-                        getDocs(collection(db, 'users', uid, 'trash'))
-                    ]);
-                    const batch = writeBatch(db);
-                    ps.forEach(d => batch.delete(d.ref));
-                    ts.forEach(d => batch.delete(d.ref));
-                    await batch.commit();
-                    await deleteDoc(doc(db, 'users', uid, 'data', 'profile'));
-                    hideSync();
-                } catch (e) { showSyncError('Erro ao limpar dados na nuvem'); }
-            };
-        }
-
-        // ── Helpers ───────────────────────────────────────────────
-        const GOOGLE_SVG = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>`;
-
-        function setLoginBtnLoading(msg) {
-            const btn = document.getElementById('googleSignInBtn');
-            if (btn) { btn.disabled = true; btn.classList.add('loading'); btn.innerHTML = `<span class="sync-spin">↻</span> ${msg || 'Entrando...'}`; }
-        }
-        function resetLoginBtn() {
-            const btn = document.getElementById('googleSignInBtn');
-            if (btn) { btn.disabled = false; btn.classList.remove('loading'); btn.innerHTML = `${GOOGLE_SVG} Entrar com o Google`; }
-        }
-        function showLoginError(msg) {
-            const box = document.querySelector('.login-box');
-            let err = document.getElementById('loginErrorMsg');
-            if (!err) {
-                err = document.createElement('div');
-                err.id = 'loginErrorMsg';
-                err.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.25);border-radius:10px;color:#ef5350;font-size:0.82em;line-height:1.5;';
-                box && box.appendChild(err);
-            }
-            err.textContent = msg;
-            err.style.display = 'block';
-            setTimeout(() => { if (err) err.style.display = 'none'; }, 6000);
-        }
-
-        // ── Sign In ───────────────────────────────────────────────
-        window.signInWithGoogle = async function() {
-            const btn = document.getElementById('googleSignInBtn');
-            if (btn && btn.disabled) return; // prevent double-click
-            setLoginBtnLoading('Entrando...');
-            try {
-                // Try popup first
-                await signInWithPopup(auth, provider);
-                // onAuthStateChanged handles the rest
-            } catch (e) {
-                console.error('[Auth] signInWithPopup error:', e.code, e.message);
-                const blocked = ['auth/popup-blocked', 'auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
-                if (blocked.includes(e.code)) {
-                    // Fallback: redirect flow
-                    setLoginBtnLoading('Redirecionando...');
-                    try {
-                        await signInWithRedirect(auth, provider);
-                        // Page will reload; getRedirectResult handles it below
-                    } catch (e2) {
-                        console.error('[Auth] signInWithRedirect error:', e2.code, e2.message);
-                        resetLoginBtn();
-                        showLoginError('Não foi possível iniciar o login. Verifique sua conexão e tente novamente.');
-                    }
-                } else if (e.code === 'auth/network-request-failed') {
-                    resetLoginBtn();
-                    showLoginError('Sem conexão com a internet. Verifique e tente novamente.');
-                } else if (e.code === 'auth/unauthorized-domain') {
-                    resetLoginBtn();
-                    showLoginError('Domínio não autorizado no Firebase. Adicione este domínio nas configurações do projeto.');
-                } else {
-                    resetLoginBtn();
-                    showLoginError('Erro ao fazer login: ' + (e.message || e.code || 'erro desconhecido'));
-                }
-            }
-        };
-
-        window.signOutUser = async function() {
-            if (!confirm('Sair da sua conta?')) return;
-            try {
-                await signOut(auth);
-            } catch (e) {
-                console.error('[Auth] signOut error:', e);
-                alert('Erro ao sair. Tente novamente.');
-            }
-        };
-
-        // ── Handle redirect result (fires after page reloads from redirect login) ──
-        getRedirectResult(auth).then((result) => {
-            if (result && result.user) {
-                // User signed in via redirect — onAuthStateChanged will handle the rest
-                console.log('[Auth] Redirect login successful:', result.user.displayName);
-            }
-        }).catch((e) => {
-            if (e.code && e.code !== 'auth/no-auth-event') {
-                console.error('[Auth] getRedirectResult error:', e.code, e.message);
-                resetLoginBtn();
-                showLoginError('Erro ao completar o login: ' + (e.message || e.code));
-            }
-        });
-
-        // ── Auth State ────────────────────────────────────────────
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // Update user bar
-                const bar    = document.getElementById('userBar');
-                const avatar = document.getElementById('userAvatar');
-                const nameEl = document.getElementById('userBarName');
-                if (bar)    bar.classList.add('show');
-                if (avatar && user.photoURL) avatar.src = user.photoURL;
-                if (nameEl) nameEl.textContent = user.displayName || user.email;
-
-                // Pre-fill name from Google if not set locally yet
-                if (!localStorage.getItem('userName') && user.displayName) {
-                    localStorage.setItem('userName', user.displayName);
-                }
-
-                // 1. Load cloud data into localStorage
-                await loadCloud(user.uid);
-
-                // 2. Refresh in-memory state
-                if (typeof window.loadStateFromStorage === 'function') {
-                    window.loadStateFromStorage();
-                }
-
-                // 3. Apply patches BEFORE app launches (so first save goes to cloud too)
-                applyPatches(user.uid);
-
-                // 4. Hide login overlay and launch
-                const overlay = document.getElementById('loginOverlay');
-                if (overlay) overlay.classList.add('hide');
-                if (typeof window.launchApp === 'function') window.launchApp();
-
-                // 5. Save profile (ensures new users get persisted immediately)
-                fsProfile(user.uid);
-
-            } else {
-                const bar = document.getElementById('userBar');
-                if (bar) bar.classList.remove('show');
-                const overlay = document.getElementById('loginOverlay');
-                if (overlay) overlay.classList.remove('hide');
-                resetLoginBtn();
-            }
-        });
-    </script>
 </body>
 </html>
