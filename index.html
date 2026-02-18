@@ -639,9 +639,9 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             <span class="login-logo">📖</span>
             <div class="login-title">Meu Diário Digital</div>
             <div class="login-sub">Entre com o Google para acessar e sincronizar seu diário em qualquer dispositivo.</div>
-            <button class="google-btn" id="googleSignInBtn" onclick="signInWithGoogle()">
-                <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>
-                Entrar com o Google
+            <button class="google-btn" id="googleSignInBtn" onclick="signInWithGoogle()" disabled>
+                <span class="sync-spin" style="display:inline-block;">↻</span>
+                Carregando...
             </button>
             <div class="login-footer">🔒 Seus dados ficam salvos em segurança na sua conta Google.<br>Acesse de qualquer dispositivo a qualquer hora.</div>
         </div>
@@ -3191,10 +3191,10 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 
     </script>
 
-    <!-- Firebase Integration (v2 – patches first, async uploads) -->
+    <!-- Firebase Integration (v3 – popup + redirect fallback) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
         import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
 
@@ -3213,6 +3213,20 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
         const db   = getFirestore(app);
         const stor = getStorage(app);
         const provider = new GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        // ── Enable login button now that Firebase is ready ────────
+        (function enableBtn() {
+            const GOOGLE_SVG_INLINE = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>`;
+            const btn = document.getElementById('googleSignInBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                btn.innerHTML = `${GOOGLE_SVG_INLINE} Entrar com o Google`;
+            }
+        })();
 
         // ── Sync UI ──────────────────────────────────────────────
         let syncTimer = null;
@@ -3496,26 +3510,90 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             };
         }
 
+        // ── Helpers ───────────────────────────────────────────────
+        const GOOGLE_SVG = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>`;
+
+        function setLoginBtnLoading(msg) {
+            const btn = document.getElementById('googleSignInBtn');
+            if (btn) { btn.disabled = true; btn.classList.add('loading'); btn.innerHTML = `<span class="sync-spin">↻</span> ${msg || 'Entrando...'}`; }
+        }
+        function resetLoginBtn() {
+            const btn = document.getElementById('googleSignInBtn');
+            if (btn) { btn.disabled = false; btn.classList.remove('loading'); btn.innerHTML = `${GOOGLE_SVG} Entrar com o Google`; }
+        }
+        function showLoginError(msg) {
+            const box = document.querySelector('.login-box');
+            let err = document.getElementById('loginErrorMsg');
+            if (!err) {
+                err = document.createElement('div');
+                err.id = 'loginErrorMsg';
+                err.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.25);border-radius:10px;color:#ef5350;font-size:0.82em;line-height:1.5;';
+                box && box.appendChild(err);
+            }
+            err.textContent = msg;
+            err.style.display = 'block';
+            setTimeout(() => { if (err) err.style.display = 'none'; }, 6000);
+        }
+
         // ── Sign In ───────────────────────────────────────────────
         window.signInWithGoogle = async function() {
             const btn = document.getElementById('googleSignInBtn');
-            if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
+            if (btn && btn.disabled) return; // prevent double-click
+            setLoginBtnLoading('Entrando...');
             try {
+                // Try popup first
                 await signInWithPopup(auth, provider);
+                // onAuthStateChanged handles the rest
             } catch (e) {
-                console.error(e);
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg> Entrar com o Google`;
+                console.error('[Auth] signInWithPopup error:', e.code, e.message);
+                const blocked = ['auth/popup-blocked', 'auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
+                if (blocked.includes(e.code)) {
+                    // Fallback: redirect flow
+                    setLoginBtnLoading('Redirecionando...');
+                    try {
+                        await signInWithRedirect(auth, provider);
+                        // Page will reload; getRedirectResult handles it below
+                    } catch (e2) {
+                        console.error('[Auth] signInWithRedirect error:', e2.code, e2.message);
+                        resetLoginBtn();
+                        showLoginError('Não foi possível iniciar o login. Verifique sua conexão e tente novamente.');
+                    }
+                } else if (e.code === 'auth/network-request-failed') {
+                    resetLoginBtn();
+                    showLoginError('Sem conexão com a internet. Verifique e tente novamente.');
+                } else if (e.code === 'auth/unauthorized-domain') {
+                    resetLoginBtn();
+                    showLoginError('Domínio não autorizado no Firebase. Adicione este domínio nas configurações do projeto.');
+                } else {
+                    resetLoginBtn();
+                    showLoginError('Erro ao fazer login: ' + (e.message || e.code || 'erro desconhecido'));
                 }
-                alert('Erro ao fazer login. Verifique se o popup foi bloqueado.');
             }
         };
 
         window.signOutUser = async function() {
             if (!confirm('Sair da sua conta?')) return;
-            await signOut(auth);
+            try {
+                await signOut(auth);
+            } catch (e) {
+                console.error('[Auth] signOut error:', e);
+                alert('Erro ao sair. Tente novamente.');
+            }
         };
+
+        // ── Handle redirect result (fires after page reloads from redirect login) ──
+        getRedirectResult(auth).then((result) => {
+            if (result && result.user) {
+                // User signed in via redirect — onAuthStateChanged will handle the rest
+                console.log('[Auth] Redirect login successful:', result.user.displayName);
+            }
+        }).catch((e) => {
+            if (e.code && e.code !== 'auth/no-auth-event') {
+                console.error('[Auth] getRedirectResult error:', e.code, e.message);
+                resetLoginBtn();
+                showLoginError('Erro ao completar o login: ' + (e.message || e.code));
+            }
+        });
 
         // ── Auth State ────────────────────────────────────────────
         onAuthStateChanged(auth, async (user) => {
@@ -3557,6 +3635,7 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                 if (bar) bar.classList.remove('show');
                 const overlay = document.getElementById('loginOverlay');
                 if (overlay) overlay.classList.remove('hide');
+                resetLoginBtn();
             }
         });
     </script>
