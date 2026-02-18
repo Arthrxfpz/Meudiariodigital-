@@ -640,7 +640,7 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             <div class="login-title">Meu Diário Digital</div>
             <div class="login-sub">Entre com o Google para acessar e sincronizar seu diário em qualquer dispositivo.</div>
             <button class="google-btn" id="googleSignInBtn" onclick="signInWithGoogle()" disabled>
-                <span class="sync-spin" style="display:inline-block;">↻</span>
+                <span class="sync-spin" style="display:inline-block;color:#999;">↻</span>
                 Carregando...
             </button>
             <div class="login-footer">🔒 Seus dados ficam salvos em segurança na sua conta Google.<br>Acesse de qualquer dispositivo a qualquer hora.</div>
@@ -3191,78 +3191,101 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 
     </script>
 
-    <!-- Firebase Integration (v3 – popup + redirect fallback) -->
+    <!-- Firebase Integration (v4 – Realtime Database) -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+        import { initializeApp }                                          from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup,
+                 signInWithRedirect, getRedirectResult,
+                 signOut, onAuthStateChanged }                            from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, remove, child, update }     from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { getStorage, ref as sRef,
+                 uploadString, getDownloadURL }                           from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
 
-
+        // ── Config ────────────────────────────────────────────────
         const firebaseConfig = {
-            apiKey: "AIzaSyAfFu0ZJldAF_eYWQ4KKXMmeaz0LK1xvAk",
-            authDomain: "meudiariodigital-3108a.firebaseapp.com",
-            projectId: "meudiariodigital-3108a",
-            storageBucket: "meudiariodigital-3108a.firebasestorage.app",
+            apiKey:            "AIzaSyAfFu0ZJldAF_eYWQ4KKXMmeaz0LK1xvAk",
+            authDomain:        "meudiariodigital-3108a.firebaseapp.com",
+            projectId:         "meudiariodigital-3108a",
+            storageBucket:     "meudiariodigital-3108a.firebasestorage.app",
             messagingSenderId: "478403433306",
-            appId: "1:478403433306:web:0c1b617fb21a20ae681963"
+            appId:             "1:478403433306:web:0c1b617fb21a20ae681963",
+            databaseURL:       "https://meudiariodigital-3108a-default-rtdb.firebaseio.com"
         };
 
-        const app  = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db   = getFirestore(app);
-        const stor = getStorage(app);
+        const app      = initializeApp(firebaseConfig);
+        const auth     = getAuth(app);
+        const db       = getDatabase(app);
+        const stor     = getStorage(app);
         const provider = new GoogleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
         provider.setCustomParameters({ prompt: 'select_account' });
 
-        // ── Enable login button now that Firebase is ready ────────
-        (function enableBtn() {
-            const GOOGLE_SVG_INLINE = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>`;
+        // ── Enable login button once module is ready ──────────────
+        const GSVG = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>`;
+        (function() {
             const btn = document.getElementById('googleSignInBtn');
-            if (btn) {
-                btn.disabled = false;
-                btn.classList.remove('loading');
-                btn.innerHTML = `${GOOGLE_SVG_INLINE} Entrar com o Google`;
-            }
+            if (btn) { btn.disabled = false; btn.classList.remove('loading'); btn.innerHTML = GSVG + ' Entrar com o Google'; }
         })();
 
-        // ── Sync UI ──────────────────────────────────────────────
+        // ── Sync UI ───────────────────────────────────────────────
         let syncTimer = null;
         function showSync(msg) {
             clearTimeout(syncTimer);
-            const el   = document.getElementById('syncIndicator');
-            const msg2 = document.getElementById('syncMsg');
-            if (el)   { el.classList.add('show'); el.classList.remove('error'); }
-            if (msg2)   msg2.textContent = msg || 'Salvando...';
+            const el = document.getElementById('syncIndicator');
+            const m  = document.getElementById('syncMsg');
+            if (el) { el.classList.add('show'); el.classList.remove('error'); }
+            if (m)    m.textContent = msg || 'Salvando...';
         }
         function hideSync() {
             syncTimer = setTimeout(() => {
                 const el = document.getElementById('syncIndicator');
                 if (el) el.classList.remove('show');
-            }, 1200);
+            }, 1500);
         }
         function showSyncError(msg) {
-            const el   = document.getElementById('syncIndicator');
-            const msg2 = document.getElementById('syncMsg');
-            if (el)   { el.classList.add('show', 'error'); }
-            if (msg2)   msg2.textContent = '⚠ ' + msg;
-            setTimeout(() => { if (el) el.classList.remove('show', 'error'); }, 4000);
+            const el = document.getElementById('syncIndicator');
+            const m  = document.getElementById('syncMsg');
+            if (el) { el.classList.add('show', 'error'); }
+            if (m)    m.textContent = '⚠ ' + msg;
+            setTimeout(() => { if (el) el.classList.remove('show', 'error'); }, 5000);
         }
 
-        // ── Strip base64 for Firestore (1 MB doc limit) ──────────
+        // ── UI helpers para o botão de login ──────────────────────
+        function setLoginBtnLoading(msg) {
+            const btn = document.getElementById('googleSignInBtn');
+            if (btn) { btn.disabled = true; btn.classList.add('loading'); btn.innerHTML = '<span class="sync-spin">↻</span> ' + (msg || 'Entrando...'); }
+        }
+        function resetLoginBtn() {
+            const btn = document.getElementById('googleSignInBtn');
+            if (btn) { btn.disabled = false; btn.classList.remove('loading'); btn.innerHTML = GSVG + ' Entrar com o Google'; }
+        }
+        function showLoginError(msg) {
+            const box = document.querySelector('.login-box');
+            let err = document.getElementById('loginErrorMsg');
+            if (!err) {
+                err = document.createElement('div');
+                err.id = 'loginErrorMsg';
+                err.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.25);border-radius:10px;color:#ef5350;font-size:0.82em;line-height:1.5;';
+                if (box) box.appendChild(err);
+            }
+            err.textContent = msg;
+            err.style.display = 'block';
+            setTimeout(() => { if (err) err.style.display = 'none'; }, 7000);
+        }
+
+        // ── Strip base64 (RTDB tem limite de 10 MB por nó) ───────
         function stripMedia(post) {
             const p = { ...post };
-            if (Array.isArray(p.images)) {
+            if (Array.isArray(p.images))
                 p.images = p.images.map(i => (i && i.startsWith('data:')) ? null : i).filter(Boolean);
-            }
-            if (p.image  && p.image.startsWith('data:'))  p.image  = null;
-            if (p.audio  && p.audio.startsWith('data:'))  { p.audio = null; }
-            return Object.fromEntries(Object.entries(p).filter(([, v]) => v !== undefined));
+            if (p.image && p.image.startsWith('data:')) p.image = null;
+            if (p.audio && p.audio.startsWith('data:')) p.audio = null;
+            // Remove undefined values (RTDB não aceita undefined)
+            return JSON.parse(JSON.stringify(p));
         }
 
-        // ── Background: upload base64 media → update Firestore with URLs ──
+        // ── Upload mídia para Storage e atualiza RTDB ─────────────
         async function uploadMediaBg(post, uid) {
             let changed = false;
             const p = { ...post };
@@ -3272,11 +3295,11 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                     const img = p.images[i];
                     if (img && img.startsWith('data:')) {
                         try {
-                            const r = ref(stor, `u/${uid}/img/${p.id}/${i}`);
+                            const r = sRef(stor, `u/${uid}/img/${p.id}/${i}`);
                             await uploadString(r, img, 'data_url');
                             urls.push(await getDownloadURL(r));
                             changed = true;
-                        } catch { urls.push(null); }
+                        } catch(e) { console.error('uploadImg error', e); urls.push(null); }
                     } else { urls.push(img); }
                 }
                 p.images = urls.filter(Boolean);
@@ -3284,15 +3307,20 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             }
             if (post.audio && post.audio.startsWith('data:')) {
                 try {
-                    const r = ref(stor, `u/${uid}/audio/${p.id}`);
+                    const r = sRef(stor, `u/${uid}/audio/${p.id}`);
                     await uploadString(r, post.audio, 'data_url');
                     p.audio = await getDownloadURL(r);
                     changed = true;
-                } catch { p.audio = null; }
+                } catch(e) { console.error('uploadAudio error', e); p.audio = null; }
             }
             if (changed) {
-                await setDoc(doc(db, 'users', uid, 'posts', String(p.id)), { images: p.images, image: p.image, audio: p.audio }, { merge: true });
-                // Update localStorage with URLs
+                // Atualiza só os campos de mídia no RTDB
+                await update(ref(db, `users/${uid}/posts/${p.id}`), {
+                    images: p.images || [],
+                    image:  p.image  || null,
+                    audio:  p.audio  || null
+                });
+                // Atualiza localStorage
                 try {
                     const arr = JSON.parse(localStorage.getItem('diaryPosts') || '[]');
                     const idx = arr.findIndex(x => x.id === p.id);
@@ -3305,29 +3333,30 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             }
         }
 
-        // ── Core write helpers ────────────────────────────────────
-        function fsPost(post, uid) {
-            // Instant: save lean doc (no base64)
+        // ── Helpers de escrita no RTDB ────────────────────────────
+        function rtPost(post, uid) {
             const lean = stripMedia(post);
-            setDoc(doc(db, 'users', uid, 'posts', String(post.id)), lean).catch(console.error);
-            // Background: upload media
+            set(ref(db, `users/${uid}/posts/${post.id}`), lean).catch(e => {
+                console.error('[RTDB] rtPost error:', e.code, e.message);
+                showSyncError('Erro ao salvar post: ' + (e.code || e.message));
+            });
             uploadMediaBg(post, uid).catch(console.error);
         }
 
-        function fsDelPost(id, uid) {
-            deleteDoc(doc(db, 'users', uid, 'posts', String(id))).catch(console.error);
+        function rtDelPost(id, uid) {
+            remove(ref(db, `users/${uid}/posts/${id}`)).catch(console.error);
         }
 
-        function fsTrash(post, uid) {
+        function rtTrash(post, uid) {
             const lean = stripMedia(post);
-            setDoc(doc(db, 'users', uid, 'trash', String(post.id)), lean).catch(console.error);
+            set(ref(db, `users/${uid}/trash/${post.id}`), lean).catch(console.error);
         }
 
-        function fsDelTrash(id, uid) {
-            deleteDoc(doc(db, 'users', uid, 'trash', String(id))).catch(console.error);
+        function rtDelTrash(id, uid) {
+            remove(ref(db, `users/${uid}/trash/${id}`)).catch(console.error);
         }
 
-        function fsProfile(uid) {
+        function rtProfile(uid) {
             const profile = {
                 userName:     localStorage.getItem('userName')     || '',
                 userBio:      localStorage.getItem('userBio')      || '',
@@ -3340,99 +3369,111 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                 appPassword:  localStorage.getItem('appPassword')  || null,
                 theme:        localStorage.getItem('theme')        || null,
             };
-            setDoc(doc(db, 'users', uid, 'data', 'profile'), profile).catch(console.error);
+            return set(ref(db, `users/${uid}/profile`), profile);
         }
 
-        // ── Load cloud → merge into localStorage ──────────────────
+        // ── Carrega dados da nuvem → localStorage ─────────────────
         async function loadCloud(uid) {
             showSync('Carregando seu diário...');
             try {
-                const [profSnap, postsSnap, trashSnap] = await Promise.all([
-                    getDoc(doc(db, 'users', uid, 'data', 'profile')),
-                    getDocs(collection(db, 'users', uid, 'posts')),
-                    getDocs(collection(db, 'users', uid, 'trash'))
-                ]);
+                const snap = await get(child(ref(db), `users/${uid}`));
+                if (snap.exists()) {
+                    const data = snap.val();
 
-                if (profSnap.exists()) {
-                    const d = profSnap.data();
-                    if (d.userName)    localStorage.setItem('userName', d.userName);
-                    if (d.userBio)     localStorage.setItem('userBio', d.userBio);
-                    if (d.writingGoal) localStorage.setItem('writingGoal', d.writingGoal);
-                    if (d.prefs && Object.keys(d.prefs).length) localStorage.setItem('userPrefs', JSON.stringify(d.prefs));
-                    if (d.usedHashtags && d.usedHashtags.length) localStorage.setItem('usedHashtags', JSON.stringify(d.usedHashtags));
-                    if (d.sortOrder)   localStorage.setItem('sortOrder', d.sortOrder);
-                    if (d.viewMode)    localStorage.setItem('viewMode', d.viewMode);
-                    if (d.menuBadges)  localStorage.setItem('menuBadges', JSON.stringify(d.menuBadges));
-                    if (d.appPassword) localStorage.setItem('appPassword', d.appPassword);
-                    if (d.theme)       localStorage.setItem('theme', d.theme);
-                }
+                    // Perfil
+                    const prof = data.profile || {};
+                    if (prof.userName)    localStorage.setItem('userName',     prof.userName);
+                    if (prof.userBio)     localStorage.setItem('userBio',      prof.userBio);
+                    if (prof.writingGoal) localStorage.setItem('writingGoal',  prof.writingGoal);
+                    if (prof.prefs && Object.keys(prof.prefs).length)
+                        localStorage.setItem('userPrefs', JSON.stringify(prof.prefs));
+                    if (prof.usedHashtags && prof.usedHashtags.length)
+                        localStorage.setItem('usedHashtags', JSON.stringify(prof.usedHashtags));
+                    if (prof.sortOrder)   localStorage.setItem('sortOrder',    prof.sortOrder);
+                    if (prof.viewMode)    localStorage.setItem('viewMode',      prof.viewMode);
+                    if (prof.menuBadges)  localStorage.setItem('menuBadges',   JSON.stringify(prof.menuBadges));
+                    if (prof.appPassword) localStorage.setItem('appPassword',  prof.appPassword);
+                    if (prof.theme)       localStorage.setItem('theme',        prof.theme);
 
-                if (!postsSnap.empty) {
-                    const cloud = [];
-                    postsSnap.forEach(d => cloud.push(d.data()));
-                    // Preserve local base64 media that hasn't been uploaded yet
-                    const local = JSON.parse(localStorage.getItem('diaryPosts') || '[]');
-                    const localMap = Object.fromEntries(local.map(p => [String(p.id), p]));
-                    const merged = cloud.map(cp => {
-                        const lp = localMap[String(cp.id)];
-                        if (lp) {
-                            if ((!cp.images || !cp.images.length) && lp.images && lp.images.length) cp.images = lp.images;
-                            if (!cp.image && lp.image) cp.image = lp.image;
-                            if (!cp.audio && lp.audio) cp.audio = lp.audio;
-                        }
-                        return cp;
-                    });
-                    localStorage.setItem('diaryPosts', JSON.stringify(merged));
-                }
+                    // Posts
+                    if (data.posts) {
+                        const cloud = Object.values(data.posts);
+                        // Preserva mídia base64 local que ainda não foi enviada
+                        const local    = JSON.parse(localStorage.getItem('diaryPosts') || '[]');
+                        const localMap = Object.fromEntries(local.map(p => [String(p.id), p]));
+                        const merged   = cloud.map(cp => {
+                            const lp = localMap[String(cp.id)];
+                            if (lp) {
+                                if ((!cp.images || !cp.images.length) && lp.images && lp.images.length) cp.images = lp.images;
+                                if (!cp.image && lp.image) cp.image = lp.image;
+                                if (!cp.audio && lp.audio) cp.audio = lp.audio;
+                            }
+                            return cp;
+                        });
+                        localStorage.setItem('diaryPosts', JSON.stringify(merged));
+                    }
 
-                if (!trashSnap.empty) {
-                    const t = [];
-                    trashSnap.forEach(d => t.push(d.data()));
-                    localStorage.setItem('diaryTrash', JSON.stringify(t));
+                    // Lixeira
+                    if (data.trash) {
+                        localStorage.setItem('diaryTrash', JSON.stringify(Object.values(data.trash)));
+                    }
                 }
+                hideSync();
             } catch (e) {
-                console.error('loadCloud error:', e);
-                showSyncError('Erro ao carregar dados da nuvem. Usando dados locais.');
-                return;
+                console.error('[RTDB] loadCloud error:', e.code, e.message, e);
+                let msg = 'Erro ao carregar dados da nuvem. Usando dados locais.';
+                if (e.code === 'PERMISSION_DENIED' || (e.message && e.message.includes('permission'))) {
+                    msg = 'Permissão negada no banco de dados. Verifique as Rules no Firebase Console.';
+                } else if (e.code) {
+                    msg = 'Erro RTDB [' + e.code + ']. Usando dados locais.';
+                }
+                showSyncError(msg);
             }
-            hideSync();
         }
 
-        // ── Patch all app functions (call BEFORE launchApp) ───────
+        // ── Aplica patches nas funções do app ─────────────────────
         function applyPatches(uid) {
 
-            // finalizeSave — instant local + async cloud
+            // finalizeSave — salva local imediatamente + nuvem assíncrono
             const _fin = window.finalizeSave;
-            window.finalizeSave = function(post, isDraft) {
-                _fin(post, isDraft);            // saves to localStorage, updates UI immediately
+            window.finalizeSave = async function(post, isDraft) {
+                _fin(post, isDraft);
                 showSync('Salvando...');
-                fsPost(post, uid);
-                fsProfile(uid);
-                hideSync();
+                try {
+                    await Promise.all([
+                        set(ref(db, `users/${uid}/posts/${post.id}`), stripMedia(post)),
+                        rtProfile(uid)
+                    ]);
+                    hideSync();
+                    uploadMediaBg(post, uid).catch(console.error);
+                } catch (e) {
+                    console.error('[RTDB] finalizeSave error:', e.code, e.message);
+                    showSyncError('Erro ao salvar: ' + (e.code || e.message || 'desconhecido'));
+                }
             };
 
-            // saveNameFromPopup — also persist profile to cloud
+            // saveNameFromPopup
             const _namePopup = window.saveNameFromPopup;
             window.saveNameFromPopup = function() {
                 _namePopup();
-                fsProfile(uid);
+                rtProfile(uid).catch(console.error);
             };
 
-            // saveProfile (edit profile modal)
+            // saveProfile
             const _savePro = window.saveProfile;
             window.saveProfile = function() {
                 _savePro();
-                fsProfile(uid);
+                rtProfile(uid).catch(console.error);
             };
 
             // deletePost
             const _del = window.deletePost;
             window.deletePost = async function(id) {
                 await _del(id);
-                fsDelPost(id, uid);
+                rtDelPost(id, uid);
                 const trashArr = JSON.parse(localStorage.getItem('diaryTrash') || '[]');
                 const moved = trashArr.find(p => p.id === id);
-                if (moved) fsTrash(moved, uid);
+                if (moved) rtTrash(moved, uid);
             };
 
             // restoreFromTrash
@@ -3440,33 +3481,29 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             window.restoreFromTrash = function(id) {
                 _restore(id);
                 const p = (window.getPostById || (() => null))(id);
-                if (p) fsPost(p, uid);
-                fsDelTrash(id, uid);
+                if (p) rtPost(p, uid);
+                rtDelTrash(id, uid);
             };
 
             // deleteFromTrashPermanently
             const _delPerm = window.deleteFromTrashPermanently;
             window.deleteFromTrashPermanently = async function(id) {
                 await _delPerm(id);
-                fsDelTrash(id, uid);
+                rtDelTrash(id, uid);
             };
 
             // emptyTrashAll
             const _emptyTrash = window.emptyTrashAll;
             window.emptyTrashAll = async function() {
                 await _emptyTrash();
-                getDocs(collection(db, 'users', uid, 'trash')).then(snap => {
-                    const batch = writeBatch(db);
-                    snap.forEach(d => batch.delete(d.ref));
-                    batch.commit().catch(console.error);
-                });
+                remove(ref(db, `users/${uid}/trash`)).catch(console.error);
             };
 
             // togglePin / toggleFavorite / publishDraft / moveToDraft
             const wrap = (orig) => function(id) {
                 orig(id);
                 const p = (window.getPostById || (() => null))(id);
-                if (p) fsPost(p, uid);
+                if (p) rtPost(p, uid);
             };
             window.togglePin      = wrap(window.togglePin);
             window.toggleFavorite = wrap(window.toggleFavorite);
@@ -3478,11 +3515,14 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             window.duplicatePost = function(id) {
                 _dup(id);
                 const posts = (window.getAppPosts || (() => []))();
-                if (posts.length) fsPost(posts[0], uid);
+                if (posts.length) rtPost(posts[0], uid);
             };
 
-            // Profile-only changes (fire and forget)
-            const wrapPro = (orig) => function(...args) { orig(...args); fsProfile(uid); };
+            // Mudanças só de perfil
+            const wrapPro = (orig) => function(...args) {
+                orig(...args);
+                rtProfile(uid).catch(console.error);
+            };
             window.updatePref     = wrapPro(window.updatePref);
             window.addHashtag     = wrapPro(window.addHashtag);
             window.setSortOrder   = wrapPro(window.setSortOrder);
@@ -3490,80 +3530,42 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
             window.addMenuBadge   = wrapPro(window.addMenuBadge);
             window.clearMenuBadge = wrapPro(window.clearMenuBadge);
 
-            // doReset — also wipe cloud
+            // doReset — apaga tudo na nuvem também
             const _reset = window.doReset;
             window.doReset = async function() {
                 await _reset();
                 showSync('Limpando dados na nuvem...');
                 try {
-                    const [ps, ts] = await Promise.all([
-                        getDocs(collection(db, 'users', uid, 'posts')),
-                        getDocs(collection(db, 'users', uid, 'trash'))
-                    ]);
-                    const batch = writeBatch(db);
-                    ps.forEach(d => batch.delete(d.ref));
-                    ts.forEach(d => batch.delete(d.ref));
-                    await batch.commit();
-                    await deleteDoc(doc(db, 'users', uid, 'data', 'profile'));
+                    await remove(ref(db, `users/${uid}`));
                     hideSync();
                 } catch (e) { showSyncError('Erro ao limpar dados na nuvem'); }
             };
         }
 
-        // ── Helpers ───────────────────────────────────────────────
-        const GOOGLE_SVG = `<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 13 5 4 14 4 25s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 19 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.3 29 5 24 5 16.3 5 9.7 9.2 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 9.9-1.9 13.5-5L31.6 34c-1.9 1.4-4.3 2.2-7.6 2.2-5.2 0-9.6-3.5-11.2-8.3L6.2 33C9.5 39.6 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l.1-.1 5.9 5.1C36.5 38 44 32 44 25c0-1.3-.1-2.7-.4-4z"/></svg>`;
-
-        function setLoginBtnLoading(msg) {
-            const btn = document.getElementById('googleSignInBtn');
-            if (btn) { btn.disabled = true; btn.classList.add('loading'); btn.innerHTML = `<span class="sync-spin">↻</span> ${msg || 'Entrando...'}`; }
-        }
-        function resetLoginBtn() {
-            const btn = document.getElementById('googleSignInBtn');
-            if (btn) { btn.disabled = false; btn.classList.remove('loading'); btn.innerHTML = `${GOOGLE_SVG} Entrar com o Google`; }
-        }
-        function showLoginError(msg) {
-            const box = document.querySelector('.login-box');
-            let err = document.getElementById('loginErrorMsg');
-            if (!err) {
-                err = document.createElement('div');
-                err.id = 'loginErrorMsg';
-                err.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.25);border-radius:10px;color:#ef5350;font-size:0.82em;line-height:1.5;';
-                box && box.appendChild(err);
-            }
-            err.textContent = msg;
-            err.style.display = 'block';
-            setTimeout(() => { if (err) err.style.display = 'none'; }, 6000);
-        }
-
-        // ── Sign In ───────────────────────────────────────────────
+        // ── Login com Google ──────────────────────────────────────
         window.signInWithGoogle = async function() {
             const btn = document.getElementById('googleSignInBtn');
-            if (btn && btn.disabled) return; // prevent double-click
+            if (btn && btn.disabled) return;
             setLoginBtnLoading('Entrando...');
             try {
-                // Try popup first
                 await signInWithPopup(auth, provider);
-                // onAuthStateChanged handles the rest
             } catch (e) {
                 console.error('[Auth] signInWithPopup error:', e.code, e.message);
-                const blocked = ['auth/popup-blocked', 'auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
-                if (blocked.includes(e.code)) {
-                    // Fallback: redirect flow
+                const popupErros = ['auth/popup-blocked', 'auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
+                if (popupErros.includes(e.code)) {
                     setLoginBtnLoading('Redirecionando...');
                     try {
                         await signInWithRedirect(auth, provider);
-                        // Page will reload; getRedirectResult handles it below
                     } catch (e2) {
-                        console.error('[Auth] signInWithRedirect error:', e2.code, e2.message);
                         resetLoginBtn();
-                        showLoginError('Não foi possível iniciar o login. Verifique sua conexão e tente novamente.');
+                        showLoginError('Não foi possível iniciar o login. Verifique sua conexão.');
                     }
                 } else if (e.code === 'auth/network-request-failed') {
                     resetLoginBtn();
-                    showLoginError('Sem conexão com a internet. Verifique e tente novamente.');
+                    showLoginError('Sem conexão com a internet. Tente novamente.');
                 } else if (e.code === 'auth/unauthorized-domain') {
                     resetLoginBtn();
-                    showLoginError('Domínio não autorizado no Firebase. Adicione este domínio nas configurações do projeto.');
+                    showLoginError('Domínio não autorizado. Adicione este domínio no Firebase Console → Authentication → Settings.');
                 } else {
                     resetLoginBtn();
                     showLoginError('Erro ao fazer login: ' + (e.message || e.code || 'erro desconhecido'));
@@ -3573,32 +3575,23 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 
         window.signOutUser = async function() {
             if (!confirm('Sair da sua conta?')) return;
-            try {
-                await signOut(auth);
-            } catch (e) {
-                console.error('[Auth] signOut error:', e);
-                alert('Erro ao sair. Tente novamente.');
-            }
+            try { await signOut(auth); } catch (e) { alert('Erro ao sair. Tente novamente.'); }
         };
 
-        // ── Handle redirect result (fires after page reloads from redirect login) ──
-        getRedirectResult(auth).then((result) => {
-            if (result && result.user) {
-                // User signed in via redirect — onAuthStateChanged will handle the rest
-                console.log('[Auth] Redirect login successful:', result.user.displayName);
-            }
-        }).catch((e) => {
+        // Captura resultado do login via redirect (quando popup é bloqueado)
+        getRedirectResult(auth).then(result => {
+            if (result && result.user) console.log('[Auth] Login via redirect OK:', result.user.displayName);
+        }).catch(e => {
             if (e.code && e.code !== 'auth/no-auth-event') {
-                console.error('[Auth] getRedirectResult error:', e.code, e.message);
+                console.error('[Auth] getRedirectResult error:', e.code);
                 resetLoginBtn();
-                showLoginError('Erro ao completar o login: ' + (e.message || e.code));
+                showLoginError('Erro ao completar login: ' + (e.code || e.message));
             }
         });
 
-        // ── Auth State ────────────────────────────────────────────
+        // ── Observador de autenticação ────────────────────────────
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Update user bar
                 const bar    = document.getElementById('userBar');
                 const avatar = document.getElementById('userAvatar');
                 const nameEl = document.getElementById('userBarName');
@@ -3606,29 +3599,28 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
                 if (avatar && user.photoURL) avatar.src = user.photoURL;
                 if (nameEl) nameEl.textContent = user.displayName || user.email;
 
-                // Pre-fill name from Google if not set locally yet
                 if (!localStorage.getItem('userName') && user.displayName) {
                     localStorage.setItem('userName', user.displayName);
                 }
 
-                // 1. Load cloud data into localStorage
+                // 1. Carrega dados da nuvem
                 await loadCloud(user.uid);
 
-                // 2. Refresh in-memory state
+                // 2. Atualiza estado em memória
                 if (typeof window.loadStateFromStorage === 'function') {
                     window.loadStateFromStorage();
                 }
 
-                // 3. Apply patches BEFORE app launches (so first save goes to cloud too)
+                // 3. Aplica patches antes de lançar o app
                 applyPatches(user.uid);
 
-                // 4. Hide login overlay and launch
+                // 4. Esconde overlay e inicia o app
                 const overlay = document.getElementById('loginOverlay');
                 if (overlay) overlay.classList.add('hide');
                 if (typeof window.launchApp === 'function') window.launchApp();
 
-                // 5. Save profile (ensures new users get persisted immediately)
-                fsProfile(user.uid);
+                // 5. Salva perfil inicial
+                rtProfile(user.uid).catch(console.error);
 
             } else {
                 const bar = document.getElementById('userBar');
@@ -3640,4 +3632,3 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
         });
     </script>
 </body>
-</html>
