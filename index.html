@@ -641,36 +641,40 @@ input:checked + .toggle-slider:before { transform:translateX(20px); background:#
 .trash-footer-note { padding:12px 28px 20px; font-size:0.74em; color:#333; text-align:center; flex-shrink:0; }
 
 /* === NUCLEAR RESET POPUP === */
+/* === DEVICE AUTH OVERLAY === */
+.device-auth-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.97); z-index:9999999; align-items:center; justify-content:center; padding:20px; }
+.device-auth-overlay.show { display:flex; animation:fadeIn 0.2s ease; }
+.device-auth-box { background:#0c0c0c; border:1px solid rgba(255,255,255,0.07); border-radius:28px; max-width:360px; width:100%; padding:40px 32px 32px; text-align:center; animation:scaleIn 0.3s ease; box-shadow:0 40px 100px rgba(0,0,0,0.95); }
+.device-auth-icon-wrap { width:80px; height:80px; border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; position:relative; transition:all 0.4s ease; }
+.device-auth-icon-wrap::before { content:''; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.05); }
+.device-auth-icon-wrap.state-idle  { background:rgba(255,255,255,0.03); border:1.5px solid rgba(255,255,255,0.07); }
+.device-auth-icon-wrap.state-waiting { background:rgba(96,165,250,0.07); border:1.5px solid rgba(96,165,250,0.22); }
+.device-auth-icon-wrap.state-waiting::before { border-color:rgba(96,165,250,0.2); animation:authRing 1.2s ease infinite; }
+.device-auth-icon-wrap.state-success { background:rgba(74,222,128,0.08); border:1.5px solid rgba(74,222,128,0.28); }
+.device-auth-icon-wrap.state-error   { background:rgba(244,67,54,0.07); border:1.5px solid rgba(244,67,54,0.22); }
+@keyframes authRing { 0%,100%{transform:scale(1);opacity:.5;} 50%{transform:scale(1.08);opacity:1;} }
+.device-auth-icon { font-size:2.2em; transition:all 0.35s ease; }
+.state-idle    .device-auth-icon { color:#333; }
+.state-waiting .device-auth-icon { color:#60a5fa; animation:breatheIcon 1.4s ease infinite; }
+.state-success .device-auth-icon { color:#4ade80; }
+.state-error   .device-auth-icon { color:#ef5350; }
+@keyframes breatheIcon { 0%,100%{opacity:.6;transform:scale(.93);} 50%{opacity:1;transform:scale(1.07);} }
+.device-auth-purpose { font-size:0.7em; color:#383838; font-weight:600; text-transform:uppercase; letter-spacing:1.3px; margin-bottom:10px; }
+.device-auth-title { font-size:1.2em; font-weight:700; color:#ddd; margin-bottom:8px; }
+.device-auth-sub { font-size:0.84em; color:#444; line-height:1.65; min-height:40px; transition:color 0.3s; }
+.device-auth-sub.clr-error   { color:#ef5350; }
+.device-auth-sub.clr-success { color:#4ade80; }
+.device-auth-actions { margin-top:26px; display:flex; flex-direction:column; gap:9px; }
+.da-retry-btn    { padding:12px; background:rgba(96,165,250,0.08); border:1px solid rgba(96,165,250,0.2); border-radius:12px; color:#60a5fa; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.88em; font-weight:500; transition:all 0.2s; display:none; align-items:center; justify-content:center; gap:8px; }
+.da-retry-btn:hover    { background:rgba(96,165,250,0.14); }
+.da-fallback-btn { padding:11px; background:transparent; border:1px solid rgba(255,255,255,0.06); border-radius:12px; color:#3a3a3a; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.82em; transition:all 0.2s; display:none; align-items:center; justify-content:center; gap:8px; }
+.da-fallback-btn:hover { color:#777; border-color:rgba(255,255,255,0.1); }
+.da-cancel-btn   { padding:10px; background:transparent; border:none; color:#2a2a2a; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.82em; transition:color 0.2s; }
+.da-cancel-btn:hover { color:#666; }
 /* Lock screen tweaks */
 .lock-divider { height:1px; background:rgba(255,255,255,0.04); margin:20px 0 16px; }
 .lock-reset-link { font-size:0.8em; color:#333; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:10px; }
 .lock-reset-link:hover { color:#888; background:rgba(255,255,255,0.04); }
-/* Recovery code modal */
-.recovery-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.96); z-index:9999999; align-items:center; justify-content:center; padding:20px; }
-.recovery-overlay.show { display:flex; animation:fadeIn 0.2s ease; }
-.recovery-box { background:#0d0d0d; border:1px solid rgba(255,255,255,0.07); border-radius:24px; max-width:400px; width:100%; padding:36px 30px 28px; text-align:center; animation:scaleIn 0.3s ease; box-shadow:0 30px 80px rgba(0,0,0,0.95); }
-.recovery-icon { font-size:2.4em; margin-bottom:18px; display:block; color:#888; }
-.recovery-title { font-size:1.25em; font-weight:700; color:#e0e0e0; margin-bottom:8px; }
-.recovery-sub { font-size:0.85em; color:#555; line-height:1.65; margin-bottom:22px; }
-/* Show-code box (when setting password) */
-.recovery-code-display { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:20px; margin-bottom:18px; }
-.recovery-code-value { font-size:1.6em; font-weight:700; color:#fff; letter-spacing:4px; font-family:'Courier New',monospace; margin-bottom:8px; }
-.recovery-code-hint { font-size:0.75em; color:#555; }
-.recovery-code-copy { display:inline-flex; align-items:center; gap:6px; margin-top:10px; padding:7px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; cursor:pointer; font-size:0.8em; color:#aaa; transition:all 0.2s; font-family:'Poppins',sans-serif; }
-.recovery-code-copy:hover { background:rgba(255,255,255,0.1); color:#fff; }
-/* Input box (when using code) */
-.recovery-input { width:100%; padding:14px 16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; font-family:'Courier New',monospace; font-size:1.2em; text-align:center; letter-spacing:3px; text-transform:uppercase; transition:border-color 0.2s; margin-bottom:8px; }
-.recovery-input:focus { outline:none; border-color:rgba(255,255,255,0.25); background:rgba(255,255,255,0.06); }
-.recovery-input.valid { border-color:rgba(74,222,128,0.5); background:rgba(74,222,128,0.05); }
-.recovery-input.invalid { border-color:rgba(244,67,54,0.5); animation:shake 0.35s ease; }
-@keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
-.recovery-err { font-size:0.8em; color:#ef5350; min-height:18px; margin-bottom:12px; }
-.recovery-btn-primary { width:100%; padding:13px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:12px; color:#ddd; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.92em; font-weight:600; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:9px; }
-.recovery-btn-primary:hover { background:rgba(255,255,255,0.13); color:#fff; }
-.recovery-btn-danger { width:100%; padding:12px; background:rgba(244,67,54,0.08); border:1px solid rgba(244,67,54,0.2); border-radius:12px; color:#ef5350; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.85em; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:9px; }
-.recovery-btn-danger:hover { background:rgba(244,67,54,0.15); }
-.recovery-btn-cancel { width:100%; padding:10px; background:transparent; border:none; color:#333; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.82em; transition:color 0.2s; }
-.recovery-btn-cancel:hover { color:#666; }
 
 .nuclear-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.96); z-index:999999; align-items:center; justify-content:center; padding:20px; }
 .nuclear-overlay.show { display:flex; animation:fadeIn 0.2s ease; }
@@ -1990,216 +1994,249 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
                 </div>`;
         }
 
-        // ============================================================
-        // === RECOVERY CODE SYSTEM (works everywhere, no HTTPS req) ===
-        // ============================================================
-        const RC_KEY = 'diaryRecoveryCode';
+        // =====================================================
+        // === DEVICE AUTH (WebAuthn biometric / device PIN) ===
+        // =====================================================
+        const DA_CRED_KEY = 'daCredId';
+        let _daResolve = null;
+        let _daPurposeCtx = null;
+        let _daCanUseFallback = false;
 
-        function _generateRecoveryCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars
-            let code = '';
-            for (let i = 0; i < 8; i++) {
-                if (i === 4) code += '-';
-                code += chars[Math.floor(Math.random() * chars.length)];
-            }
-            return code; // e.g. ABCD-1234
+        async function isDeviceAuthAvailable() {
+            try {
+                return !!(window.PublicKeyCredential &&
+                    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable());
+            } catch { return false; }
         }
 
-        function _getRecoveryCode()  { return localStorage.getItem(RC_KEY) || null; }
-        function _saveRecoveryCode(c){ localStorage.setItem(RC_KEY, c); }
-        function _clearRecoveryCode(){ localStorage.removeItem(RC_KEY); }
-
-        // Open overlay and inject HTML
-        function _openRecovery(html) {
-            document.getElementById('recoveryBox').innerHTML = html;
-            document.getElementById('recoveryOverlay').classList.add('show');
-        }
-        function closeRecovery() {
-            document.getElementById('recoveryOverlay').classList.remove('show');
-        }
-
-        // ── Called after setting the diary password ──────────────────
-        function showRecoveryCodeCreated(code) {
-            _saveRecoveryCode(code);
-            _openRecovery(`
-                <span class="recovery-icon"><i class="fas fa-key"></i></span>
-                <div class="recovery-title">Guarde seu código de recuperação</div>
-                <div class="recovery-sub">Este código é a única forma de redefinir sua senha sem perder os dados. Salve-o em um lugar seguro.</div>
-                <div class="recovery-code-display">
-                    <div class="recovery-code-value" id="rcDisplayVal">${code}</div>
-                    <div class="recovery-code-hint">Código de recuperação — anote antes de fechar</div>
-                    <button class="recovery-code-copy" onclick="_copyRecoveryCode('${code}')">
-                        <i class="fas fa-copy" id="rcCopyIco"></i> Copiar código
-                    </button>
-                </div>
-                <button class="recovery-btn-primary" onclick="closeRecovery()">
-                    <i class="fas fa-check"></i> Já guardei, pode fechar
-                </button>
-            `);
+        async function _registerDACred() {
+            const challenge = crypto.getRandomValues(new Uint8Array(32));
+            const userId    = crypto.getRandomValues(new Uint8Array(16));
+            const rpId = location.hostname || undefined;
+            const opts = {
+                challenge,
+                rp: { name: 'Meu Diário Digital', ...(rpId ? { id: rpId } : {}) },
+                user: { id: userId, name: 'diary_user', displayName: 'Usuário do Diário' },
+                pubKeyCredParams: [
+                    { alg: -7,   type: 'public-key' },
+                    { alg: -257, type: 'public-key' }
+                ],
+                authenticatorSelection: {
+                    authenticatorAttachment: 'platform',
+                    userVerification: 'required',
+                    residentKey: 'preferred'
+                },
+                timeout: 60000
+            };
+            const cred = await navigator.credentials.create({ publicKey: opts });
+            const b64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+            localStorage.setItem(DA_CRED_KEY, b64);
+            return b64;
         }
 
-        function _copyRecoveryCode(code) {
-            navigator.clipboard.writeText(code).then(() => {
-                const ico = document.getElementById('rcCopyIco');
-                const btn = ico?.parentElement;
-                if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Copiado!'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copiar código'; }, 2000); }
-            }).catch(() => {
-                // Fallback for environments without clipboard API
-                const el = document.createElement('textarea');
-                el.value = code; document.body.appendChild(el); el.select();
-                document.execCommand('copy'); document.body.removeChild(el);
-                showNotification('Código copiado!', 'success');
+        async function _verifyDACred() {
+            let b64 = localStorage.getItem(DA_CRED_KEY);
+            if (!b64) b64 = await _registerDACred();
+            const credBytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+            const challenge  = crypto.getRandomValues(new Uint8Array(32));
+            const rpId = location.hostname || undefined;
+            const opts = {
+                challenge,
+                allowCredentials: [{ id: credBytes, type: 'public-key' }],
+                userVerification: 'required',
+                timeout: 60000,
+                ...(rpId ? { rpId } : {})
+            };
+            await navigator.credentials.get({ publicKey: opts });
+        }
+
+        // Main entry: returns Promise<boolean>
+        // purpose = { label, title, sub }  — what shows on the overlay
+        // allowFallback = true  — show "confirmação alternativa" if WebAuthn fails
+        function requestDeviceAuth(purpose, allowFallback = true) {
+            _daPurposeCtx = purpose;
+            _daCanUseFallback = allowFallback;
+            return new Promise(resolve => {
+                _daResolve = resolve;
+                _daSetState('idle');
+                document.getElementById('daPurpose').textContent = purpose.label || 'Verificação de identidade';
+                document.getElementById('daTitle').textContent   = purpose.title || 'Confirmar identidade';
+                document.getElementById('daSub').textContent     = purpose.sub || 'Use a biometria ou o PIN do dispositivo para continuar.';
+                document.getElementById('daSub').className       = 'device-auth-sub';
+                document.getElementById('daRetryBtn').style.display    = 'none';
+                document.getElementById('daFallbackBtn').style.display = 'none';
+                document.getElementById('deviceAuthOverlay').classList.add('show');
+                setTimeout(() => _daAttempt(), 400);
             });
         }
 
-        // ── "Esqueci minha senha" — asks for recovery code, keeps data ─
-        function forgotDiaryPassword() {
-            const hasCode = !!_getRecoveryCode();
-            if (!hasCode) {
-                // No recovery code was ever set (old password set before this feature)
-                _openRecovery(`
-                    <span class="recovery-icon" style="color:#f59e0b;"><i class="fas fa-exclamation-triangle"></i></span>
-                    <div class="recovery-title">Sem código de recuperação</div>
-                    <div class="recovery-sub">Esta senha foi criada antes do sistema de recuperação. A única opção disponível é <strong style="color:#ef5350;">apagar todos os dados</strong> para remover a senha.</div>
-                    <button class="recovery-btn-danger" onclick="_forgotNoCode()">
-                        <i class="fas fa-trash-alt"></i> Apagar tudo e redefinir senha
-                    </button>
-                    <button class="recovery-btn-cancel" onclick="closeRecovery()">Cancelar</button>
-                `);
-                return;
+        async function _daAttempt() {
+            _daSetState('waiting');
+            document.getElementById('daSub').textContent   = 'Aguardando verificação no dispositivo…';
+            document.getElementById('daSub').className     = 'device-auth-sub';
+            document.getElementById('daRetryBtn').style.display    = 'none';
+            document.getElementById('daFallbackBtn').style.display = 'none';
+
+            const available = await isDeviceAuthAvailable();
+            if (!available) { _daNoWebAuthn(); return; }
+
+            try {
+                await _verifyDACred();
+                _daSetState('success');
+                document.getElementById('daIcon').innerHTML     = '<i class="fas fa-check"></i>';
+                document.getElementById('daSub').textContent   = 'Identidade confirmada!';
+                document.getElementById('daSub').className     = 'device-auth-sub clr-success';
+                document.getElementById('daRetryBtn').style.display    = 'none';
+                document.getElementById('daFallbackBtn').style.display = 'none';
+                document.getElementById('daCancelBtn').style.display   = 'none';
+                setTimeout(() => {
+                    document.getElementById('deviceAuthOverlay').classList.remove('show');
+                    _daResolve && _daResolve({ verified: true });
+                    _daResolve = null;
+                }, 900);
+            } catch (e) {
+                if (e.name === 'NotAllowedError' || e.name === 'AbortError') {
+                    // User cancelled / timed out
+                    _daSetState('error');
+                    document.getElementById('daIcon').innerHTML   = '<i class="fas fa-times"></i>';
+                    document.getElementById('daSub').textContent = 'Verificação cancelada ou expirada.';
+                    document.getElementById('daSub').className   = 'device-auth-sub clr-error';
+                    document.getElementById('daRetryBtn').style.display = 'flex';
+                    if (_daCanUseFallback) document.getElementById('daFallbackBtn').style.display = 'flex';
+                } else {
+                    // Registration or other error
+                    _daNoWebAuthn();
+                }
             }
-            _openRecovery(`
-                <span class="recovery-icon"><i class="fas fa-unlock-alt"></i></span>
-                <div class="recovery-title">Redefinir senha</div>
-                <div class="recovery-sub">Digite o código de recuperação que você recebeu ao criar sua senha. Seus dados <strong style="color:#4ade80;">não serão apagados</strong>.</div>
-                <input class="recovery-input" id="rcInput" type="text" placeholder="XXXX-XXXX"
-                    maxlength="9" autocomplete="off" autocorrect="off" spellcheck="false"
-                    oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');_rcCheckInput(this)"
-                    onkeydown="if(event.key==='Enter')_rcSubmitForgot()">
-                <div class="recovery-err" id="rcErr"></div>
-                <button class="recovery-btn-primary" onclick="_rcSubmitForgot()">
-                    <i class="fas fa-unlock"></i> Redefinir senha
-                </button>
-                <button class="recovery-btn-cancel" onclick="closeRecovery()">Cancelar</button>
-            `);
-            setTimeout(() => document.getElementById('rcInput')?.focus(), 200);
         }
 
-        function _rcCheckInput(el) {
-            // Auto-insert dash after 4 chars
-            let v = el.value.replace(/-/g, '');
-            if (v.length > 4) v = v.slice(0,4) + '-' + v.slice(4,8);
-            el.value = v;
-            el.classList.remove('invalid');
-            document.getElementById('rcErr').textContent = '';
+        function _daNoWebAuthn() {
+            _daSetState('error');
+            document.getElementById('daIcon').innerHTML   = '<i class="fas fa-exclamation-triangle"></i>';
+            document.getElementById('daSub').textContent = 'Verificação biométrica não disponível neste dispositivo ou navegador.';
+            document.getElementById('daSub').className   = 'device-auth-sub clr-error';
+            if (_daCanUseFallback) {
+                document.getElementById('daFallbackBtn').style.display = 'flex';
+            } else {
+                document.getElementById('daSub').textContent += ' Não é possível prosseguir.';
+            }
         }
 
-        function _rcSubmitForgot() {
-            const input = document.getElementById('rcInput');
-            if (!input) return;
-            const val = input.value.trim().toUpperCase();
-            const stored = _getRecoveryCode();
-            if (val === stored) {
-                // ✅ Correct — remove ONLY the password, keep all data
+        function _daSetState(state) {
+            const wrap = document.getElementById('daIconWrap');
+            wrap.className = 'device-auth-icon-wrap state-' + state;
+            if (state === 'idle' || state === 'waiting') {
+                document.getElementById('daIcon').innerHTML = '<i class="fas fa-fingerprint"></i>';
+            }
+        }
+
+        function daRetry() { _daAttempt(); }
+
+        function daFallback() {
+            // Close overlay and resolve with fallbackNeeded flag
+            document.getElementById('deviceAuthOverlay').classList.remove('show');
+            _daResolve && _daResolve({ verified: false, fallback: true });
+            _daResolve = null;
+        }
+
+        function daCancelFn() {
+            document.getElementById('deviceAuthOverlay').classList.remove('show');
+            _daResolve && _daResolve({ verified: false, cancelled: true });
+            _daResolve = null;
+        }
+
+        // =====================================================
+        // === FORGOT DIARY PASSWORD (keeps all data!) ===
+        // =====================================================
+        async function forgotDiaryPassword() {
+            const result = await requestDeviceAuth({
+                label: 'Redefinir senha',
+                title: 'Verificar identidade',
+                sub: 'Confirme com biometria ou PIN do dispositivo para redefinir a senha do diário sem perder seus dados.'
+            }, true);
+
+            if (result.verified) {
+                // Remove only the diary password — data stays intact
                 appPassword = null;
                 appUnlocked = true;
                 lockSt = { attempts:0, lockUntil:null, cooldowns:0, dayLockUntil:null };
                 localStorage.removeItem('appPassword');
                 localStorage.setItem('lockState', JSON.stringify(lockSt));
-                _clearRecoveryCode();
-                closeRecovery();
                 document.getElementById('lockScreen').classList.remove('show');
                 initApp();
-                showNotification('Senha removida! Seus dados estão intactos.', 'success');
-            } else {
-                input.classList.add('invalid');
-                document.getElementById('rcErr').textContent = 'Código incorreto. Verifique e tente novamente.';
-                setTimeout(() => input.classList.remove('invalid'), 400);
+                showNotification('Senha removida. Seus dados estão intactos!', 'success');
+            } else if (result.fallback) {
+                // Fallback: confirm with typed phrase + wipe everything (old behavior as last resort)
+                showForgotPasswordFallback();
             }
+            // If cancelled: do nothing
         }
 
-        function _forgotNoCode() {
-            closeRecovery();
+        function showForgotPasswordFallback() {
             showPopup({
-                type:'error', title:'Apagar tudo?',
-                message:'Todos os posts, rascunhos e dados serão removidos permanentemente. Essa ação não pode ser desfeita.',
-                confirm:true, confirmText:'Apagar tudo', cancelText:'Cancelar'
+                type: 'warning',
+                title: 'Verificação indisponível',
+                message: 'A verificação biométrica não está disponível. A única alternativa é APAGAR TODOS OS DADOS e remover a senha. Deseja continuar?',
+                confirm: true,
+                confirmText: 'Apagar tudo',
+                cancelText: 'Cancelar'
             }).then(ok => {
-                if (ok) { localStorage.clear(); setTimeout(() => location.reload(), 300); }
+                if (ok) {
+                    localStorage.clear();
+                    setTimeout(() => location.reload(), 300);
+                }
             });
         }
 
-        // ── Nuclear reset — gated by recovery code or current password ─
+        // =====================================================
+        // === NUCLEAR RESET — guarded by device auth ===
+        // =====================================================
         async function confirmNuclearReset() {
             closeSettings();
-            const hasCode    = !!_getRecoveryCode();
-            const hasPw      = !!appPassword;
-            const gateLabel  = hasCode ? 'código de recuperação' : (hasPw ? 'senha do diário' : null);
-
-            if (!gateLabel) {
-                // No protection set — go straight to typed confirmation
-                _openNuclearConfirmBox();
-                return;
-            }
-
-            _openRecovery(`
-                <span class="recovery-icon" style="color:#ef5350;"><i class="fas fa-skull-crossbones"></i></span>
-                <div class="recovery-title">Autorizar exclusão total</div>
-                <div class="recovery-sub">Para apagar tudo, confirme sua identidade digitando seu <strong style="color:#fff;">${gateLabel}</strong>.</div>
-                <input class="recovery-input" id="rcGateInput" type="${hasCode ? 'text' : 'password'}"
-                    placeholder="${hasCode ? 'XXXX-XXXX' : 'Senha do diário'}"
-                    maxlength="${hasCode ? 9 : 100}" autocomplete="off"
-                    style="font-size:${hasCode ? '1.2em' : '1em'}; letter-spacing:${hasCode ? '3px' : '1px'};"
-                    oninput="${hasCode ? "this.value=this.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');_rcCheckInput(this)" : ''}"
-                    onkeydown="if(event.key==='Enter')_rcSubmitNuclear(${hasCode})">
-                <div class="recovery-err" id="rcErr"></div>
-                <button class="recovery-btn-danger" onclick="_rcSubmitNuclear(${hasCode})">
-                    <i class="fas fa-fire-alt"></i> Autorizar e continuar
-                </button>
-                <button class="recovery-btn-cancel" onclick="closeRecovery()">Cancelar</button>
-            `);
-            setTimeout(() => document.getElementById('rcGateInput')?.focus(), 200);
-        }
-
-        function _rcSubmitNuclear(useCode) {
-            const input = document.getElementById('rcGateInput');
-            if (!input) return;
-            const val = input.value.trim();
-            const stored = useCode ? _getRecoveryCode() : appPassword;
-            if (val === stored || (!stored && val === '')) {
-                closeRecovery();
-                _openNuclearConfirmBox();
-            } else {
-                input.classList.add('invalid');
-                document.getElementById('rcErr').textContent = useCode
-                    ? 'Código incorreto. Verifique e tente novamente.'
-                    : 'Senha incorreta.';
-                setTimeout(() => input.classList.remove('invalid'), 400);
+            const result = await requestDeviceAuth({
+                label: 'Apagar todos os dados',
+                title: 'Confirmar identidade',
+                sub: 'Esta ação apagará tudo permanentemente. Confirme com biometria ou PIN do dispositivo.'
+            }, true);
+            if (result.verified || result.fallback) {
+                _openNuclearConfirmBox(!!result.fallback);
             }
         }
 
-        function _openNuclearConfirmBox() {
-            document.getElementById('nuclearOverlay').classList.add('show');
+        function _openNuclearConfirmBox(isFallback = false) {
+            const overlay = document.getElementById('nuclearOverlay');
+            overlay.classList.add('show');
             document.getElementById('nuclearInput').value = '';
             document.getElementById('nuclearDeleteBtn').classList.remove('ready');
             document.getElementById('nuclearInput').classList.remove('valid');
             setTimeout(() => document.getElementById('nuclearInput').focus(), 300);
         }
 
-        // ── doReset (from password manager) ──────────────────────────
+        // =====================================================
+        // === PASSWORD MANAGER — gated nuclear reset ===
+        // =====================================================
         async function doReset() {
-            const ok = await showPopup({
-                type:'error', title:'Redefinir Senha',
-                message:'Isso vai apagar TODOS os seus posts e remover a senha. Ação irreversível!',
-                confirm:true, confirmText:'Apagar tudo', cancelText:'Cancelar'
-            });
-            if (ok) _executeDoReset();
+            const result = await requestDeviceAuth({
+                label: 'Redefinir senha do diário',
+                title: 'Verificar identidade',
+                sub: 'Confirme com biometria ou PIN para redefinir a senha. Seus dados serão apagados.'
+            }, true);
+            if (result.verified) {
+                _executeDoReset();
+            } else if (result.fallback) {
+                const ok = await showPopup({
+                    type:'error', title:'Redefinir Senha',
+                    message:'Isso vai apagar TODOS os seus posts e remover a senha. Ação irreversível!',
+                    confirm:true, confirmText:'Apagar tudo', cancelText:'Cancelar'
+                });
+                if (ok) _executeDoReset();
+            }
         }
 
         function _executeDoReset() {
             posts=[]; usedHashtags=[]; appPassword=null; appUnlocked=true;
             lockSt={attempts:0,lockUntil:null,cooldowns:0,dayLockUntil:null};
-            ['diaryPosts','usedHashtags','appPassword','lockState', RC_KEY].forEach(k=>localStorage.removeItem(k));
+            ['diaryPosts','usedHashtags','appPassword','lockState'].forEach(k=>localStorage.removeItem(k));
             document.getElementById('lockScreen').classList.remove('show');
             closePwManager();
             initApp();
@@ -2217,12 +2254,18 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
         }
 
         function executeNuclearReset() {
+            // Clear absolutely everything
             localStorage.clear();
-            posts=[]; trash=[]; userName=''; usedHashtags=[];
+            // Reset in-memory state
+            posts = [];
+            trash = [];
+            userName = '';
+            usedHashtags = [];
             menuBadges = { drafts:0, favorites:0, gallery:0, trash:0 };
             prefs = { showWordCount:false, compactView:false, showMood:true, confirmDelete:true, autoGreeting:true, fontSize:'normal', showEditedBadge:true, animatePosts:true, showDateFull:true, autoSaveDraft:false, autoSaveDraftOnLeave:false, showHashtagFilter:false, highlightFavorites:true, showHashtagsCount:true, galleryColumns:'auto', trashEnabled:true, fontFamily:'poppins', lineHeight:'normal', descPreview:'auto', dailyWordGoal:0, showDailyGoal:false, showReadingMode:true, showWritingPrompts:true, postNumbering:false, autoFocusMode:false, accentOnPosts:true, showStreakInHeader:true, confirmPostClose:false, writingSound:false, showProfileChip:true };
             closeNuclearPopup();
-            setTimeout(() => location.reload(), 400);
+            // Show welcome screen again
+            setTimeout(() => { location.reload(); }, 400);
         }
 
         function resetPrefs() {
@@ -2263,7 +2306,7 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
             document.getElementById('postDescription').addEventListener('input', e => updateCC('descCounter', e.target.value.length, 5000));
             document.getElementById('postForm').addEventListener('submit', e => { e.preventDefault(); savePost(false); });
             document.addEventListener('keydown', e => {
-                if (e.key === 'Escape') { closeModal(); closeDropdown(); closeMobileMenu(); closePostUnlock(); closePwManager(); closeLinkPopup(); closeLightbox(); closeGalleryAction(); closeTrash(); closeNuclearPopup(); closeRecovery(); }
+                if (e.key === 'Escape') { closeModal(); closeDropdown(); closeMobileMenu(); closePostUnlock(); closePwManager(); closeLinkPopup(); closeLightbox(); closeGalleryAction(); closeTrash(); closeNuclearPopup(); daCancelFn(); }
                 if (document.getElementById('lightbox').classList.contains('show')) {
                     if (e.key === 'ArrowLeft') lightboxNav(-1);
                     if (e.key === 'ArrowRight') lightboxNav(1);
@@ -2415,9 +2458,7 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
             if (!p1) { err.textContent='Digite uma senha'; return; }
             if (p1 !== p2) { err.textContent='As senhas não coincidem'; return; }
             appPassword = p1; localStorage.setItem('appPassword', p1);
-            closePwManager();
-            const code = _generateRecoveryCode();
-            showRecoveryCodeCreated(code);
+            closePwManager(); showNotification('Senha configurada!', 'success');
         }
 
         function verifyAndAct(action) {
@@ -2446,9 +2487,7 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
             if (!p1) { err.textContent='Digite a nova senha'; return; }
             if (p1 !== p2) { err.textContent='As senhas não coincidem'; return; }
             appPassword = p1; localStorage.setItem('appPassword', p1);
-            closePwManager();
-            const code = _generateRecoveryCode();
-            showRecoveryCodeCreated(code);
+            closePwManager(); showNotification('Senha alterada!', 'success');
         }
 
         // === POST PASSWORD ===
@@ -4581,10 +4620,26 @@ ${entries}
         </div>
     </div>
 
-    <!-- Recovery Overlay (multipurpose) -->
-    <div class="recovery-overlay" id="recoveryOverlay">
-        <div class="recovery-box" id="recoveryBox">
-            <!-- content injected by JS -->
+    <!-- Device Auth Overlay -->
+    <div class="device-auth-overlay" id="deviceAuthOverlay">
+        <div class="device-auth-box">
+            <div class="device-auth-icon-wrap state-idle" id="daIconWrap">
+                <span class="device-auth-icon" id="daIcon"><i class="fas fa-fingerprint"></i></span>
+            </div>
+            <div class="device-auth-purpose" id="daPurpose">Verificação de identidade</div>
+            <div class="device-auth-title" id="daTitle">Confirmar identidade</div>
+            <div class="device-auth-sub" id="daSub">Use a biometria ou o PIN do dispositivo para continuar.</div>
+            <div class="device-auth-actions">
+                <button class="da-retry-btn" id="daRetryBtn" onclick="daRetry()">
+                    <i class="fas fa-redo"></i> Tentar novamente
+                </button>
+                <button class="da-fallback-btn" id="daFallbackBtn" onclick="daFallback()">
+                    <i class="fas fa-keyboard"></i> Usar confirmação alternativa
+                </button>
+                <button class="da-cancel-btn" id="daCancelBtn" onclick="daCancelFn()">
+                    Cancelar
+                </button>
+            </div>
         </div>
     </div>
 
