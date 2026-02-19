@@ -520,14 +520,123 @@ body:not(.theme-white) h1 { background: linear-gradient(135deg, var(--accent-col
 
 
 /* ── Name Popup ── */
-.name-popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:200000; align-items:center; justify-content:center; }
+/* === ONBOARDING / BOOT SCREEN === */
+.name-popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:200000; align-items:center; justify-content:center; flex-direction:column; overflow:hidden; }
 .name-popup-overlay.show { display:flex; }
-.name-popup-box { background:rgba(22,22,22,0.99); border:1px solid #2a2a2a; border-radius:24px; padding:44px 40px; max-width:420px; width:90%; text-align:center; animation:scaleIn 0.4s ease; box-shadow:0 20px 60px rgba(0,0,0,0.9); }
-.name-popup-emoji { font-size:3.5em; margin-bottom:18px; }
-.name-popup-title { font-size:1.7em; font-weight:700; margin-bottom:8px; }
-.name-popup-sub { color:#666; font-size:0.92em; margin-bottom:28px; line-height:1.5; }
-.name-popup-input { width:100%; padding:15px 18px; background:rgba(10,10,10,0.7); border:1px solid #2a2a2a; border-radius:12px; color:#fff; font-size:1.05em; font-family:'Poppins',sans-serif; text-align:center; transition:border-color 0.2s; margin-bottom:18px; }
-.name-popup-input:focus { outline:none; border-color:#555; }
+
+/* Boot scanlines effect */
+.boot-scanlines { position:absolute; inset:0; background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px); pointer-events:none; z-index:1; animation:scanlineScroll 8s linear infinite; opacity:0.5; }
+@keyframes scanlineScroll { from{background-position:0 0;} to{background-position:0 100px;} }
+
+/* Boot logo */
+.boot-logo-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; position:absolute; inset:0; z-index:2; transition:opacity 0.8s ease, transform 0.8s ease; }
+.boot-logo-wrap.fade-out { opacity:0; transform:scale(0.9); pointer-events:none; }
+.boot-logo-icon { font-size:4em; color:#fff; opacity:0; animation:bootIconIn 0.6s ease 0.4s forwards; }
+.boot-logo-title { font-size:2.2em; font-weight:700; color:#fff; margin-top:16px; letter-spacing:-1px; opacity:0; animation:bootIconIn 0.5s ease 0.9s forwards; }
+.boot-logo-sub { font-size:0.82em; color:#333; margin-top:6px; letter-spacing:3px; text-transform:uppercase; opacity:0; animation:bootIconIn 0.5s ease 1.3s forwards; }
+.boot-press-start { margin-top:48px; font-size:0.82em; color:#333; letter-spacing:2px; text-transform:uppercase; opacity:0; animation:bootBlink 1s ease 2s infinite; cursor:pointer; padding:12px 28px; border:1px solid #222; border-radius:20px; transition:all 0.3s; }
+.boot-press-start:hover { color:#888; border-color:#444; }
+@keyframes bootIconIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+@keyframes bootBlink { 0%,100%{opacity:0;} 50%{opacity:1;} }
+
+/* Onboarding card area */
+.onboarding-wrap { position:absolute; inset:0; z-index:3; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.5s ease; }
+.onboarding-wrap.show { opacity:1; pointer-events:all; }
+.onboarding-card { background:rgba(14,14,14,0.99); border:1px solid rgba(255,255,255,0.07); border-radius:28px; padding:44px 40px; max-width:480px; width:100%; text-align:center; box-shadow:0 40px 100px rgba(0,0,0,0.9); position:relative; overflow:hidden; }
+@media(max-width:500px){ .onboarding-card { padding:32px 24px; border-radius:22px; } }
+
+/* Progress dots */
+.ob-progress { display:flex; gap:6px; justify-content:center; margin-bottom:32px; }
+.ob-dot { width:6px; height:6px; border-radius:50%; background:#222; transition:all 0.35s ease; }
+.ob-dot.done { background:#444; }
+.ob-dot.active { background:#fff; width:20px; border-radius:3px; }
+
+/* Step icon */
+.ob-step-icon { width:60px; height:60px; border-radius:18px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; font-size:1.5em; margin:0 auto 22px; transition:all 0.4s ease; }
+.ob-step-title { font-size:1.5em; font-weight:700; color:#fff; margin-bottom:8px; letter-spacing:-0.4px; line-height:1.2; }
+.ob-step-sub { color:#555; font-size:0.88em; line-height:1.6; margin-bottom:28px; }
+
+/* Name input */
+.name-popup-input { width:100%; padding:15px 18px; background:rgba(10,10,10,0.7); border:1px solid #2a2a2a; border-radius:14px; color:#fff; font-size:1.1em; font-family:'Poppins',sans-serif; text-align:center; transition:border-color 0.2s; margin-bottom:8px; }
+.name-popup-input:focus { outline:none; border-color:#555; box-shadow:0 0 0 3px rgba(255,255,255,0.04); }
+.ob-skip-hint { font-size:0.72em; color:#2a2a2a; margin-bottom:18px; cursor:pointer; transition:color 0.2s; }
+.ob-skip-hint:hover { color:#555; }
+
+/* Color options in onboarding */
+.ob-color-grid { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:10px; }
+.ob-color-dot { width:38px; height:38px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:all 0.25s ease; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ob-color-dot:hover { transform:scale(1.18); }
+.ob-color-dot.active { border-color:#fff; box-shadow:0 0 0 3px rgba(255,255,255,0.12); }
+.ob-color-dot i { color:#fff; font-size:0.72em; opacity:0; transition:opacity 0.2s; }
+.ob-color-dot.active i { opacity:1; }
+
+/* YES / NO choice cards */
+.ob-choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.ob-choice { padding:18px 14px; border-radius:18px; border:1.5px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.02); cursor:pointer; transition:all 0.22s ease; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.ob-choice:hover { border-color:rgba(255,255,255,0.18); background:rgba(255,255,255,0.05); transform:translateY(-2px); }
+.ob-choice.selected { border-color:rgba(255,255,255,0.35); background:rgba(255,255,255,0.09); box-shadow:0 0 0 1px rgba(255,255,255,0.1); }
+.ob-choice.selected-yes { border-color:rgba(74,222,128,0.45); background:rgba(74,222,128,0.07); box-shadow:0 0 0 1px rgba(74,222,128,0.15); }
+.ob-choice.selected-no { border-color:rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); }
+.ob-choice-icon { font-size:1.6em; line-height:1; }
+.ob-choice-label { font-size:0.88em; font-weight:600; color:#ddd; }
+.ob-choice-sub { font-size:0.7em; color:#444; line-height:1.4; }
+
+/* Multi-toggle (compact list for extras step) */
+.ob-multi-row { display:flex; align-items:center; gap:14px; padding:13px 16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:14px; cursor:pointer; transition:all 0.2s ease; margin-bottom:9px; text-align:left; }
+.ob-multi-row:hover { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.12); }
+.ob-multi-row.active { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.18); }
+.ob-multi-icon { width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.04); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:0.95em; }
+.ob-multi-info { flex:1; }
+.ob-multi-label { font-size:0.88em; font-weight:600; color:#ccc; margin-bottom:1px; }
+.ob-multi-sub { font-size:0.7em; color:#3a3a3a; line-height:1.35; }
+.ob-multi-pill { width:36px; height:20px; border-radius:10px; border:1.5px solid #2a2a2a; background:#111; flex-shrink:0; position:relative; transition:all 0.2s; }
+.ob-multi-pill::after { content:''; position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%; background:#2a2a2a; transition:all 0.2s; }
+.ob-multi-row.active .ob-multi-pill { background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.25); }
+.ob-multi-row.active .ob-multi-pill::after { left:18px; background:#fff; }
+
+/* Password step */
+.ob-pw-input { width:100%; padding:14px 18px; background:rgba(10,10,10,0.8); border:1px solid #2a2a2a; border-radius:14px; color:#fff; font-size:1em; font-family:'Poppins',sans-serif; text-align:center; transition:border-color 0.2s; margin-bottom:8px; letter-spacing:2px; }
+.ob-pw-input:focus { outline:none; border-color:#555; }
+.ob-pw-input::placeholder { letter-spacing:0; font-size:0.9em; }
+.ob-pw-skip { font-size:0.72em; color:#2a2a2a; margin-top:6px; cursor:pointer; transition:color 0.2s; padding:6px; display:inline-block; }
+.ob-pw-skip:hover { color:#666; }
+
+/* Font size options */
+.ob-font-opts { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px; }
+.ob-font-opt { padding:16px 8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; cursor:pointer; transition:all 0.25s ease; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.ob-font-opt:hover { border-color:rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); }
+.ob-font-opt.active { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.25); }
+.ob-font-sample { color:#ddd; font-weight:600; line-height:1; }
+.ob-font-label { font-size:0.7em; color:#555; text-transform:uppercase; letter-spacing:0.8px; }
+
+/* Preview box */
+.ob-preview-box { background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:14px 18px; margin-bottom:16px; text-align:left; }
+.ob-preview-label { font-size:0.65em; color:#333; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:600; }
+.ob-preview-content { font-size:0.88em; color:#666; line-height:1.5; }
+
+/* Navigation */
+.ob-nav { display:flex; gap:10px; margin-top:20px; }
+.ob-btn-back { padding:13px 20px; background:transparent; border:1px solid rgba(255,255,255,0.08); border-radius:14px; color:#444; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.9em; transition:all 0.2s; display:flex; align-items:center; gap:8px; }
+.ob-btn-back:hover { color:#888; border-color:rgba(255,255,255,0.15); }
+.ob-btn-next { flex:1; padding:14px 20px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:14px; color:#fff; cursor:pointer; font-family:'Poppins',sans-serif; font-size:0.92em; font-weight:600; transition:all 0.25s ease; display:flex; align-items:center; justify-content:center; gap:9px; }
+.ob-btn-next:hover { background:rgba(255,255,255,0.16); transform:translateY(-1px); }
+.ob-btn-next:active { transform:translateY(0); }
+
+/* Step slide animation */
+@keyframes obSlideIn { from{opacity:0;transform:translateX(30px);} to{opacity:1;transform:translateX(0);} }
+@keyframes obSlideOut { from{opacity:1;transform:translateX(0);} to{opacity:0;transform:translateX(-30px);} }
+.ob-step-in { animation:obSlideIn 0.35s ease forwards; }
+.ob-step-out { animation:obSlideOut 0.25s ease forwards; }
+
+/* Final screen */
+.ob-final-stars { display:flex; gap:6px; justify-content:center; margin-bottom:20px; }
+.ob-final-star { font-size:1.4em; opacity:0; animation:starPop 0.4s ease forwards; }
+.ob-final-star:nth-child(1){animation-delay:0.1s}
+.ob-final-star:nth-child(2){animation-delay:0.25s}
+.ob-final-star:nth-child(3){animation-delay:0.4s}
+@keyframes starPop { from{opacity:0;transform:scale(0) rotate(-20deg);} to{opacity:1;transform:scale(1) rotate(0);} }
+.ob-summary-tags { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin:16px 0 22px; }
+.ob-summary-tag { padding:5px 13px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:20px; font-size:0.78em; color:#888; display:flex; align-items:center; gap:6px; }
 /* ── Greeting ── */
 .greeting-bar { text-align:center; margin-bottom:10px; }
 .greeting-text { font-size:1.05em; color:#777; font-weight:300; }
@@ -1073,16 +1182,34 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
             <div class="lightbox-counter" id="lightboxCounter"></div>
         </div>
 
-        <!-- Name Popup (first visit) -->
+        <!-- ONBOARDING OVERLAY (first visit) -->
         <div class="name-popup-overlay" id="namePopup">
-            <div class="name-popup-box">
-                <div class="name-popup-emoji"><i class="fas fa-book-open" style="font-size:0.85em;color:#888;"></i></div>
-                <div class="name-popup-title">Bem-vindo ao seu Diário!</div>
-                <div class="name-popup-sub">Como você se chama? Isso vai personalizar sua experiência.</div>
-                <input class="name-popup-input" id="namePopupInput" type="text" placeholder="Seu nome..." maxlength="60" onkeydown="if(event.key==='Enter')saveNameFromPopup()">
-                <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveNameFromPopup()">
-                    <i class="fas fa-arrow-right"></i> Começar
-                </button>
+            <!-- Scanlines effect -->
+            <div class="boot-scanlines"></div>
+
+            <!-- Boot logo screen -->
+            <div class="boot-logo-wrap" id="bootLogoWrap">
+                <div class="boot-logo-icon"><i class="fas fa-book-open"></i></div>
+                <div class="boot-logo-title">Meu Diário Digital</div>
+                <div class="boot-logo-sub">Versão 2.0</div>
+                <div class="boot-press-start" id="bootPressStart" onclick="obStartSetup()">
+                    ▶ &nbsp; Pressione para começar
+                </div>
+            </div>
+
+            <!-- Onboarding steps -->
+            <div class="onboarding-wrap" id="onboardingWrap">
+                <div class="onboarding-card" id="onboardingCard">
+                    <!-- Progress dots -->
+                    <div class="ob-progress" id="obProgress"></div>
+                    <!-- Step content rendered by JS -->
+                    <div id="obStepContent"></div>
+                    <!-- Navigation -->
+                    <div class="ob-nav" id="obNav">
+                        <button class="ob-btn-back" id="obBtnBack" onclick="obBack()"><i class="fas fa-chevron-left"></i></button>
+                        <button class="ob-btn-next" id="obBtnNext" onclick="obNext()"><i class="fas fa-arrow-right"></i> <span id="obBtnNextLabel">Continuar</span></button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1393,7 +1520,7 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
                 updateLockUI();
             } else {
                 appUnlocked = true;
-                initApp();
+                checkNameOnLoad();
             }
             setupEventListeners();
         });
@@ -1465,20 +1592,436 @@ body.lh-tight .post-description { line-height: 1.45 !important; }
         function checkNameOnLoad() {
             if (!userName) {
                 document.getElementById('namePopup').classList.add('show');
-                setTimeout(()=>document.getElementById('namePopupInput').focus(), 300);
             } else {
                 initApp();
             }
         }
 
-        function saveNameFromPopup() {
-            const val = document.getElementById('namePopupInput').value.trim();
-            if (!val) { document.getElementById('namePopupInput').style.borderColor='#f44336'; setTimeout(()=>{document.getElementById('namePopupInput').style.borderColor='#2a2a2a';},700); return; }
-            userName = val;
-            localStorage.setItem('userName', val);
-            document.getElementById('namePopup').classList.remove('show');
-            initApp();
+        // ===============================================================
+        // === ONBOARDING SYSTEM =========================================
+        // ===============================================================
+        let _obStep = 0;
+        let _obName = '';
+        let _obColor = 'theme-white';
+        let _obGreeting = null;
+        let _obFontSize = 'normal';
+        let _obMoodFilter = null;
+        let _obHashFilter = null;
+        let _obTrash = null;
+        let _obAutoDraft = null;
+        let _obCompact = false;
+        let _obShowQuote = false;
+        let _obPassword = '';
+        let _obSetPassword = false;
+
+        const _obSteps = [
+            'name', 'color', 'greeting', 'fontsize',
+            'moodfilter', 'hashfilter',
+            'trash', 'autodraft',
+            'extras', 'password', 'done'
+        ];
+
+        const _obColors = [
+            { id:'theme-white', color:'#888', label:'Padrão' },
+            { id:'theme-purple', color:'#c084fc', label:'Roxo' },
+            { id:'theme-blue', color:'#60a5fa', label:'Azul' },
+            { id:'theme-green', color:'#4ade80', label:'Verde' },
+            { id:'theme-rose', color:'#fb7185', label:'Rosa' },
+            { id:'theme-amber', color:'#fbbf24', label:'Âmbar' },
+            { id:'theme-cyan', color:'#22d3ee', label:'Ciano' },
+        ];
+
+        function obStartSetup() {
+            const logoWrap = document.getElementById('bootLogoWrap');
+            logoWrap.classList.add('fade-out');
+            setTimeout(() => {
+                logoWrap.style.display = 'none';
+                _obStep = 0;
+                const wrap = document.getElementById('onboardingWrap');
+                wrap.classList.add('show');
+                obRenderStep();
+            }, 600);
         }
+
+        function obRenderStep() {
+            const step = _obSteps[_obStep];
+            const totalSteps = _obSteps.length - 1;
+            const content = document.getElementById('obStepContent');
+            const nav = document.getElementById('obNav');
+            const backBtn = document.getElementById('obBtnBack');
+            const prog = document.getElementById('obProgress');
+            const card = document.getElementById('onboardingCard');
+            if (card) card.scrollTop = 0;
+
+            // Progress dots (exclude done)
+            prog.style.display = step === 'done' ? 'none' : 'flex';
+            prog.innerHTML = _obSteps.slice(0, totalSteps).map((_, i) =>
+                '<div class="ob-dot ' + (i < _obStep ? 'done' : i === _obStep ? 'active' : '') + '"></div>'
+            ).join('');
+
+            // Back button
+            backBtn.style.display = (_obStep > 0 && step !== 'done') ? 'flex' : 'none';
+
+            // Animate
+            content.classList.remove('ob-step-in', 'ob-step-out');
+            void content.offsetWidth;
+            content.classList.add('ob-step-in');
+
+            // Nav button text
+            nav.style.display = 'flex';
+            const nextBtn = document.getElementById('obBtnNext');
+            if (step === 'done') {
+                backBtn.style.display = 'none';
+                nextBtn.innerHTML = '<i class="fas fa-rocket"></i>&nbsp; Começar a escrever!';
+            } else {
+                const isLast = step === _obSteps[totalSteps - 1];
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i>&nbsp; ' + (isLast ? 'Finalizar' : 'Continuar');
+            }
+
+            // Render step
+            const map = {
+                name: obStepName, color: obStepColor, greeting: obStepGreeting,
+                fontsize: obStepFontSize, moodfilter: obStepMoodFilter,
+                hashfilter: obStepHashFilter, trash: obStepTrash,
+                autodraft: obStepAutoDraft, extras: obStepExtras,
+                password: obStepPassword, done: obStepDone
+            };
+            content.innerHTML = (map[step] || (() => ''))();
+            if (step === 'name') setTimeout(() => document.getElementById('namePopupInput')?.focus(), 200);
+        }
+
+        function obBack() {
+            if (_obStep > 0) { _obStep--; obRenderStep(); }
+        }
+
+        function obNext() {
+            const step = _obSteps[_obStep];
+            if (step === 'name') {
+                const val = document.getElementById('namePopupInput')?.value.trim() || '';
+                if (!val) {
+                    const inp = document.getElementById('namePopupInput');
+                    inp.style.borderColor = '#f44336';
+                    inp.focus();
+                    setTimeout(() => inp.style.borderColor = '#2a2a2a', 700);
+                    return;
+                }
+                _obName = val;
+            }
+            if (step === 'password' && _obSetPassword) {
+                const pw1 = document.getElementById('obPw1')?.value || '';
+                const pw2 = document.getElementById('obPw2')?.value || '';
+                const err = document.getElementById('obPwErr');
+                if (!pw1) { if (err) err.textContent = 'Digite uma senha'; return; }
+                if (pw1 !== pw2) { if (err) err.textContent = 'As senhas não coincidem'; return; }
+                _obPassword = pw1;
+            }
+            if (step === 'done') { obFinish(); return; }
+            if (_obStep < _obSteps.length - 1) { _obStep++; obRenderStep(); }
+        }
+
+        // ---- Step renderers ----
+
+        function obStepName() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-user-edit"></i></div>
+                <div class="ob-step-title">Como você se chama?</div>
+                <div class="ob-step-sub">Isso personaliza seu diário. Pode mudar depois no perfil.</div>
+                <input class="name-popup-input" id="namePopupInput" type="text" placeholder="Seu nome..." maxlength="60" value="${_obName}"
+                    onkeydown="if(event.key==='Enter')obNext()" oninput="_obName=this.value" autocomplete="off">
+                <div class="ob-skip-hint" onclick="obSkipName()">Pular por agora</div>`;
+        }
+
+        function obSkipName() { _obName = 'Usuário'; _obStep++; obRenderStep(); }
+
+        function obStepColor() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-palette" style="color:var(--accent-color,#fff);"></i></div>
+                <div class="ob-step-title">Cor de destaque</div>
+                <div class="ob-step-sub">Personaliza bordas, badges e acentos.</div>
+                <div class="ob-color-grid">
+                    ${_obColors.map(c => `<div class="ob-color-dot${_obColor===c.id?' active':''}" data-theme="${c.id}" style="background:${c.color};" onclick="obSetColor('${c.id}')" title="${c.label}"><i class="fas fa-check"></i></div>`).join('')}
+                </div>
+                <div style="margin-top:14px;font-size:0.72em;color:#2a2a2a;">Pode trocar nas configurações a qualquer hora</div>`;
+        }
+
+        function obStepGreeting() {
+            const first = (_obName || 'Usuário').split(' ')[0];
+            const h = new Date().getHours();
+            const greetMsg = h >= 5 && h < 12 ? 'Bom dia, ' + first + '! ☀️' : h >= 12 && h < 19 ? 'Boa tarde, ' + first + '! 🌤️' : 'Boa noite, ' + first + '! 🌙';
+            const previewHtml = _obGreeting !== false ? greetMsg : '<span style="color:#333;font-style:italic;">Saudações desativadas</span>';
+            return `
+                <div class="ob-step-icon"><i class="fas fa-sun" style="color:#fbbf24;"></i></div>
+                <div class="ob-step-title">Saudações automáticas</div>
+                <div class="ob-step-sub">Quer uma saudação personalizada toda vez que abrir o diário?</div>
+                <div class="ob-preview-box">
+                    <div class="ob-preview-label"><i class="fas fa-eye"></i>&nbsp; Preview</div>
+                    <div class="ob-preview-content" id="obGreetPreview">${previewHtml}</div>
+                </div>
+                <div class="ob-choice-grid">
+                    <div class="ob-choice${_obGreeting === true ? ' selected selected-yes' : ''}" onclick="obChoose('greeting',true)">
+                        <div class="ob-choice-icon">😊</div>
+                        <div class="ob-choice-label">Sim, quero!</div>
+                        <div class="ob-choice-sub">Saudação no topo</div>
+                    </div>
+                    <div class="ob-choice${_obGreeting === false ? ' selected selected-no' : ''}" onclick="obChoose('greeting',false)">
+                        <div class="ob-choice-icon">🤐</div>
+                        <div class="ob-choice-label">Não, obrigado</div>
+                        <div class="ob-choice-sub">Interface limpa</div>
+                    </div>
+                </div>`;
+        }
+
+        function obStepFontSize() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-text-height" style="color:#60a5fa;"></i></div>
+                <div class="ob-step-title">Tamanho de fonte</div>
+                <div class="ob-step-sub">Qual prefere para leitura e escrita?</div>
+                <div class="ob-font-opts">
+                    <div class="ob-font-opt${_obFontSize==='small'?' active':''}" data-size="small" onclick="obSetFont('small')">
+                        <div class="ob-font-sample" style="font-size:0.82em;">Aa</div>
+                        <div class="ob-font-label">Pequeno</div>
+                    </div>
+                    <div class="ob-font-opt${_obFontSize==='normal'?' active':''}" data-size="normal" onclick="obSetFont('normal')">
+                        <div class="ob-font-sample" style="font-size:1.1em;">Aa</div>
+                        <div class="ob-font-label">Padrão</div>
+                    </div>
+                    <div class="ob-font-opt${_obFontSize==='large'?' active':''}" data-size="large" onclick="obSetFont('large')">
+                        <div class="ob-font-sample" style="font-size:1.45em;">Aa</div>
+                        <div class="ob-font-label">Grande</div>
+                    </div>
+                </div>
+                <div style="margin-top:10px;font-size:0.72em;color:#2a2a2a;">Disponível em Configurações → Exibição</div>`;
+        }
+
+        function obStepMoodFilter() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-smile" style="color:#fbbf24;"></i></div>
+                <div class="ob-step-title">Filtro por humor</div>
+                <div class="ob-step-sub">Exibir uma barra para filtrar posts por emoji de humor?</div>
+                <div class="ob-preview-box" style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:12px;">
+                    <span style="font-size:1.3em;">😍</span><span style="font-size:1.3em;">😃</span><span style="font-size:1.3em;">😭</span><span style="font-size:1.3em;">😡</span><span style="font-size:1.3em;">🥺</span>
+                    <span style="font-size:0.72em;color:#444;width:100%;text-align:center;margin-top:4px;">Clique num emoji para ver só esses posts</span>
+                </div>
+                <div class="ob-choice-grid">
+                    <div class="ob-choice${_obMoodFilter === true ? ' selected selected-yes' : ''}" onclick="obChoose('moodfilter',true)">
+                        <div class="ob-choice-icon">✅</div>
+                        <div class="ob-choice-label">Ativar</div>
+                        <div class="ob-choice-sub">Mostra filtro de humor</div>
+                    </div>
+                    <div class="ob-choice${_obMoodFilter === false ? ' selected selected-no' : ''}" onclick="obChoose('moodfilter',false)">
+                        <div class="ob-choice-icon">🚫</div>
+                        <div class="ob-choice-label">Não agora</div>
+                        <div class="ob-choice-sub">Mais simples</div>
+                    </div>
+                </div>`;
+        }
+
+        function obStepHashFilter() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-hashtag" style="color:#60a5fa;"></i></div>
+                <div class="ob-step-title">Filtro por hashtags</div>
+                <div class="ob-step-sub">Exibir uma barra para filtrar posts pelas hashtags?</div>
+                <div class="ob-preview-box" style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:12px;">
+                    ${['#viagem','#familia','#trabalho','#reflexão'].map(t=>'<span style="padding:4px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-size:0.78em;color:#555;">'+t+'</span>').join('')}
+                    <span style="font-size:0.72em;color:#333;width:100%;margin-top:4px;">Clique numa tag para ver só esses posts</span>
+                </div>
+                <div class="ob-choice-grid">
+                    <div class="ob-choice${_obHashFilter === true ? ' selected selected-yes' : ''}" onclick="obChoose('hashfilter',true)">
+                        <div class="ob-choice-icon">✅</div>
+                        <div class="ob-choice-label">Ativar</div>
+                        <div class="ob-choice-sub">Barra de hashtags ativa</div>
+                    </div>
+                    <div class="ob-choice${_obHashFilter === false ? ' selected selected-no' : ''}" onclick="obChoose('hashfilter',false)">
+                        <div class="ob-choice-icon">🚫</div>
+                        <div class="ob-choice-label">Não agora</div>
+                        <div class="ob-choice-sub">Sem barra de tags</div>
+                    </div>
+                </div>`;
+        }
+
+        function obStepTrash() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-trash-alt" style="color:#ef5350;"></i></div>
+                <div class="ob-step-title">Lixeira</div>
+                <div class="ob-step-sub">Posts excluídos ficam guardados por <strong style="color:#888;">7 dias</strong> antes de sumirem de vez — você pode recuperar nesse período.</div>
+                <div class="ob-choice-grid">
+                    <div class="ob-choice${_obTrash === true ? ' selected selected-yes' : ''}" onclick="obChoose('trash',true)">
+                        <div class="ob-choice-icon">♻️</div>
+                        <div class="ob-choice-label">Usar lixeira</div>
+                        <div class="ob-choice-sub">7 dias para recuperar</div>
+                    </div>
+                    <div class="ob-choice${_obTrash === false ? ' selected selected-no' : ''}" onclick="obChoose('trash',false)">
+                        <div class="ob-choice-icon">💨</div>
+                        <div class="ob-choice-label">Apagar direto</div>
+                        <div class="ob-choice-sub">Exclusão permanente</div>
+                    </div>
+                </div>`;
+        }
+
+        function obStepAutoDraft() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-file-alt" style="color:#4ade80;"></i></div>
+                <div class="ob-step-title">Rascunho automático</div>
+                <div class="ob-step-sub">Se fechar o editor no meio de uma publicação, salva automaticamente como rascunho?</div>
+                <div class="ob-choice-grid">
+                    <div class="ob-choice${_obAutoDraft === true ? ' selected selected-yes' : ''}" onclick="obChoose('autodraft',true)">
+                        <div class="ob-choice-icon">💾</div>
+                        <div class="ob-choice-label">Salvar rascunho</div>
+                        <div class="ob-choice-sub">Nada se perde ao sair</div>
+                    </div>
+                    <div class="ob-choice${_obAutoDraft === false ? ' selected selected-no' : ''}" onclick="obChoose('autodraft',false)">
+                        <div class="ob-choice-icon">🗑️</div>
+                        <div class="ob-choice-label">Descartar</div>
+                        <div class="ob-choice-sub">Fecha sem salvar</div>
+                    </div>
+                </div>`;
+        }
+
+        function obStepExtras() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-sliders-h" style="color:#c084fc;"></i></div>
+                <div class="ob-step-title">Mais detalhes</div>
+                <div class="ob-step-sub" style="margin-bottom:16px;">Opções extras — ative o que quiser. Tudo pode ser mudado depois.</div>
+                <div class="ob-multi-row${_obCompact?' active':''}" onclick="obMultiToggle('compact')">
+                    <div class="ob-multi-icon"><i class="fas fa-compress-alt" style="color:#888;"></i></div>
+                    <div class="ob-multi-info">
+                        <div class="ob-multi-label">Visualização compacta</div>
+                        <div class="ob-multi-sub">Posts menores, mais itens visíveis de uma vez</div>
+                    </div>
+                    <div class="ob-multi-pill"></div>
+                </div>
+                <div class="ob-multi-row${_obShowQuote?' active':''}" onclick="obMultiToggle('quote')">
+                    <div class="ob-multi-icon"><i class="fas fa-quote-left" style="color:#888;"></i></div>
+                    <div class="ob-multi-info">
+                        <div class="ob-multi-label">Citação do dia</div>
+                        <div class="ob-multi-sub">Frase inspiradora abaixo do título</div>
+                    </div>
+                    <div class="ob-multi-pill"></div>
+                </div>`;
+        }
+
+        function obStepPassword() {
+            return `
+                <div class="ob-step-icon"><i class="fas fa-lock" style="color:#fbbf24;"></i></div>
+                <div class="ob-step-title">Proteger com senha?</div>
+                <div class="ob-step-sub">Impede que outras pessoas acessem seu diário neste dispositivo.</div>
+                <div class="ob-choice-grid" id="obPwChoices">
+                    <div class="ob-choice${_obSetPassword === true ? ' selected selected-yes' : ''}" onclick="obPickPassword(true)">
+                        <div class="ob-choice-icon">🔒</div>
+                        <div class="ob-choice-label">Quero senha</div>
+                        <div class="ob-choice-sub">Proteção com PIN ou senha</div>
+                    </div>
+                    <div class="ob-choice${_obSetPassword === false ? ' selected selected-no' : ''}" onclick="obPickPassword(false)">
+                        <div class="ob-choice-icon">🔓</div>
+                        <div class="ob-choice-label">Sem senha</div>
+                        <div class="ob-choice-sub">Pode configurar depois</div>
+                    </div>
+                </div>
+                <div id="obPwFields" style="display:${_obSetPassword ? 'block' : 'none'};margin-top:4px;">
+                    <input class="ob-pw-input" id="obPw1" type="password" placeholder="Digite sua senha..." autocomplete="new-password" oninput="_obPassword=this.value" value="${_obPassword}">
+                    <input class="ob-pw-input" id="obPw2" type="password" placeholder="Confirme a senha..." autocomplete="new-password" onkeydown="if(event.key==='Enter')obNext()">
+                    <div style="font-size:0.72em;color:#ef5350;min-height:16px;margin-top:2px;" id="obPwErr"></div>
+                </div>
+                <div class="ob-pw-skip" onclick="obPickPassword(false)">${_obSetPassword ? '↩ Cancelar e pular senha' : 'Posso configurar nas Configurações depois'}</div>`;
+        }
+
+        function obStepDone() {
+            const first = (_obName || 'Usuário').split(' ')[0];
+            const accentLabel = _obColors.find(c => c.id === _obColor)?.label || 'Padrão';
+            const fontLabel = {small:'Pequeno',normal:'Padrão',large:'Grande'}[_obFontSize];
+            const items = [
+                {icon:'fas fa-user', label:first},
+                {icon:'fas fa-palette', label:accentLabel},
+                {icon:'fas fa-text-height', label:'Fonte '+fontLabel},
+                _obGreeting !== false && {icon:'fas fa-sun', label:'Saudações'},
+                _obMoodFilter && {icon:'fas fa-smile', label:'Filtro humor'},
+                _obHashFilter && {icon:'fas fa-hashtag', label:'Filtro hashtags'},
+                _obTrash !== false && {icon:'fas fa-trash-restore', label:'Lixeira'},
+                _obAutoDraft && {icon:'fas fa-save', label:'Rascunho auto'},
+                _obCompact && {icon:'fas fa-compress-alt', label:'Compacto'},
+                _obShowQuote && {icon:'fas fa-quote-left', label:'Citação'},
+                _obSetPassword && {icon:'fas fa-lock', label:'Senha ativa'},
+            ].filter(Boolean);
+            return `
+                <div class="ob-final-stars">
+                    <span class="ob-final-star">🎉</span>
+                    <span class="ob-final-star">✨</span>
+                    <span class="ob-final-star">🚀</span>
+                </div>
+                <div class="ob-step-title">Tudo pronto, ${first}!</div>
+                <div class="ob-step-sub">Seu diário está configurado. Explore ainda mais em <strong style="color:#888;">Configurações</strong> quando quiser.</div>
+                <div class="ob-summary-tags">
+                    ${items.map(s => '<div class="ob-summary-tag"><i class="'+s.icon+'"></i> '+s.label+'</div>').join('')}
+                </div>`;
+        }
+
+        // ---- Helpers ----
+        function obChoose(key, val) {
+            if (key === 'greeting') _obGreeting = val;
+            else if (key === 'moodfilter') _obMoodFilter = val;
+            else if (key === 'hashfilter') _obHashFilter = val;
+            else if (key === 'trash') _obTrash = val;
+            else if (key === 'autodraft') _obAutoDraft = val;
+            obRenderStep();
+        }
+        function obMultiToggle(key) {
+            if (key === 'compact') _obCompact = !_obCompact;
+            else if (key === 'quote') _obShowQuote = !_obShowQuote;
+            obRenderStep();
+        }
+        function obPickPassword(want) {
+            _obSetPassword = want;
+            const f = document.getElementById('obPwFields');
+            if (f) f.style.display = want ? 'block' : 'none';
+            document.querySelectorAll('#obPwChoices .ob-choice').forEach((el,i) => {
+                el.classList.remove('selected','selected-yes','selected-no');
+                if (want && i===0) el.classList.add('selected','selected-yes');
+                if (!want && i===1) el.classList.add('selected','selected-no');
+            });
+            const sk = document.querySelector('.ob-pw-skip');
+            if (sk) sk.textContent = want ? '↩ Cancelar e pular senha' : 'Posso configurar nas Configurações depois';
+            if (want) setTimeout(() => document.getElementById('obPw1')?.focus(), 100);
+        }
+        function obSetColor(id) {
+            _obColor = id;
+            document.querySelectorAll('.ob-color-dot').forEach(d => d.classList.toggle('active', d.dataset.theme === id));
+            _obColors.forEach(t => document.body.classList.remove(t.id));
+            if (id !== 'theme-white') document.body.classList.add(id);
+        }
+        function obSetFont(size) {
+            _obFontSize = size;
+            document.querySelectorAll('.ob-font-opt').forEach(o => o.classList.toggle('active', o.dataset.size === size));
+        }
+        function obFinish() {
+            userName = _obName || 'Usuário';
+            localStorage.setItem('userName', userName);
+            localStorage.setItem('colorTheme', _obColor);
+            prefs.autoGreeting = _obGreeting !== false;
+            prefs.fontSize = _obFontSize;
+            prefs.showMoodFilter = _obMoodFilter === true;
+            prefs.showHashtagFilter = _obHashFilter === true;
+            prefs.trashEnabled = _obTrash !== false;
+            prefs.autoSaveDraftOnLeave = _obAutoDraft === true;
+            prefs.compactView = _obCompact;
+            prefs.showQuote = _obShowQuote;
+            localStorage.setItem('userPrefs', JSON.stringify(prefs));
+            if (_obSetPassword && _obPassword) {
+                appPassword = _obPassword;
+                localStorage.setItem('appPassword', _obPassword);
+            }
+            const overlay = document.getElementById('namePopup');
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                overlay.style.opacity = '';
+                overlay.style.transition = '';
+                initApp();
+            }, 500);
+        }
+
+        // Legacy stub
+        function saveNameFromPopup() { obNext(); }
 
         // === PROFILE ===
         function openProfileEdit() {
